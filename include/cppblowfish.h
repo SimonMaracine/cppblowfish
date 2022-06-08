@@ -1,10 +1,10 @@
-#ifndef CBLOWFISH_H_
-#define CBLOWFISH_H_
+#ifndef CPPBLOWFISH_H_
+#define CPPBLOWFISH_H_
 
 #include <string>
 #include <stdexcept>
 
-namespace cblowfish {
+namespace cppblowfish {
     class Buffer {
     public:
         Buffer() = default;
@@ -45,4 +45,4 @@ namespace cblowfish {
     };
 }
 
-#endif  // CBLOWFISH_H_
+#endif  // CPPBLOWFISH_H_

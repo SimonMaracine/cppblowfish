@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <string.h>
 
-#include "cblowfish.h"
+#include "cppblowfish.h"
 
 static const uint32_t P[18] = {
     0x243F6A88u, 0x85A308D3u, 0x13198A2Eu,
@@ -227,7 +227,7 @@ static const uint32_t S[4][256] = {
       0x3AC372E6u }
 };
 
-namespace cblowfish {
+namespace cppblowfish {
     BlowfishContext::BlowfishContext(const std::string& key) {
         initialize(key);
     }
