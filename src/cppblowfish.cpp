@@ -228,6 +228,66 @@ static const uint32_t S[4][256] = {
 };
 
 namespace cppblowfish {
+    Buffer::Buffer(void* data, size_t size)
+        : buffer_size(size), capacity(size) {
+        this->data = new unsigned char[size];
+
+        if (data != nullptr) {
+            memcpy(this->data, data, size);
+        }
+    }
+
+    Buffer::~Buffer() {
+        delete[] data;
+    }
+
+    Buffer::Buffer(const Buffer& other) {
+
+    }
+
+    Buffer& Buffer::operator=(const Buffer& other) {
+
+    }
+
+    Buffer::Buffer(Buffer&& other) {
+
+    }
+
+    Buffer& Buffer::operator=(Buffer&& other) {
+
+    }
+
+    void Buffer::reserve(size_t capacity) {
+        if (capacity < buffer_size) {
+            throw AllocationError(
+                "The new capacity is smaller than the current buffer size"
+            );
+        }
+
+        unsigned char* new_data = new unsigned char[buffer_size];
+
+        if (data != nullptr) {
+            memcpy(new_data, data, this->buffer_size);
+        }
+
+        delete[] data;
+
+        data = new_data;
+        this->capacity = capacity;
+    }
+
+    void Buffer::padd(size_t count, unsigned char character) {
+        if (buffer_size + count > capacity) {
+            reserve(buffer_size + count);
+        }
+
+        for (size_t i = 0; i < count; i++) {
+            data[buffer_size + i] = character;
+        }
+
+        padding = count;
+    }
+
     BlowfishContext::BlowfishContext(const std::string& key) {
         initialize(key);
     }
@@ -235,7 +295,7 @@ namespace cppblowfish {
     void BlowfishContext::initialize(const std::string& key) {
         if (initialized) {
             throw AlreadyInitializedError(
-                "Context has already been initialzed; to change the key, create another context"
+                "Context has already been initialized; to change the key, create another context"
             );
         }
 
@@ -275,11 +335,40 @@ namespace cppblowfish {
         initialized = true;
     }
 
-    void BlowfishContext::encrypt(const Buffer& buffer) {
+    void BlowfishContext::encrypt(const Buffer& data, Buffer& cipher) {
+        Buffer result;
+        Buffer data_copy = data;
 
+        size_t length = data.size();
+        const size_t padding = length > 4 * 2 ? ((length / 4 * 2) + 1) * 4 * 2 - length : 4 * 2 - length;
+
+        data_copy.padd(padding, '\0');
+
+
+        {
+        std::string cipher;
+
+        size_t length = string.length();
+        constexpr size_t j = sizeof(uint32_t);
+        const size_t rem = length > j * 2 ? ((length / j * 2) + 1) * j * 2 - length : j * 2 - length;
+        string.append(rem, '\0');
+        length = string.length();
+
+        Blowfish blowfish(key);
+        uint32_t lm, rm;
+
+        for (size_t i = 0; i < length; i += 8) {
+            lm = *reinterpret_cast<uint32_t*>(const_cast<char*>(string.substr(i, j).c_str()));
+            rm = *reinterpret_cast<uint32_t*>(const_cast<char*>(string.substr(i + 4, j).c_str()));
+            blowfish.encrypt(lm, rm);
+            cipher += from_uint(lm) + from_uint(rm);
+        }
+
+        return cipher;
+        }
     }
 
-    void BlowfishContext::decrypt(Buffer& buffer) {
+    void BlowfishContext::decrypt(const Buffer& cipher, Buffer& data) {
 
     }
 

@@ -8,12 +8,23 @@ namespace cppblowfish {
     class Buffer {
     public:
         Buffer() = default;
-        ~Buffer() = default;
+        Buffer(void* data, size_t size);
+        ~Buffer();
+        Buffer(const Buffer& other);
+        Buffer& operator=(const Buffer& other);
+        Buffer(Buffer&& other);
+        Buffer& operator=(Buffer&& other);
 
         unsigned char* get() const { return data; }
+        size_t size() const { return buffer_size; }
+
+        void reserve(size_t capacity);
+        void padd(size_t count, unsigned char character);
     private:
         unsigned char* data = nullptr;
-        size_t size = 0;
+        size_t buffer_size = 0;
+        size_t capacity = 0;
+        size_t padding = 0;
     };
 
     class BlowfishContext {
@@ -24,8 +35,8 @@ namespace cppblowfish {
         BlowfishContext(const BlowfishContext& other) = delete;
 
         void initialize(const std::string& key);
-        void encrypt(const Buffer& buffer);
-        void decrypt(Buffer& buffer);
+        void encrypt(const Buffer& data, Buffer& cipher);
+        void decrypt(const Buffer& cipher, Buffer& data);
     private:
         void _encrypt(uint32_t* left, uint32_t* right);
         void _decrypt(uint32_t* left, uint32_t* right);
@@ -41,6 +52,14 @@ namespace cppblowfish {
         AlreadyInitializedError(const std::string& message)
             : std::logic_error(message) {}
         AlreadyInitializedError(const char* message)
+            : std::logic_error(message) {}
+    };
+
+    class AllocationError : public std::logic_error {
+    public:
+        AllocationError(const std::string& message)
+            : std::logic_error(message) {}
+        AllocationError(const char* message)
             : std::logic_error(message) {}
     };
 }
