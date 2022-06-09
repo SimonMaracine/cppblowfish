@@ -243,7 +243,9 @@ namespace cppblowfish {
     }
 
     Buffer::~Buffer() {
-        delete[] data;
+        if (!is_static) {
+            delete[] data;
+        }
     }
 
     Buffer::Buffer(const Buffer& other) {
@@ -327,14 +329,24 @@ namespace cppblowfish {
                 );
             }
 
-            memcpy(data + buffer_size, other.data, other.buffer_size);
+            if (other.is_static) {
+                memcpy(data + buffer_size, &other, other.buffer_size);
+            } else {
+                memcpy(data + buffer_size, other.data, other.buffer_size);
+            }
+
             buffer_size += other.buffer_size;
         } else {
             if (buffer_size + other.buffer_size > capacity) {
                 reserve(buffer_size + other.buffer_size);
             }
 
-            memcpy(data + buffer_size, other.data, other.buffer_size);
+            if (other.is_static) {
+                memcpy(data + buffer_size, &other, other.buffer_size);
+            } else {
+                memcpy(data + buffer_size, other.data, other.buffer_size);
+            }
+
             buffer_size += other.buffer_size;
         }
 
@@ -342,13 +354,19 @@ namespace cppblowfish {
     }
 
     void Buffer::reserve(size_t capacity) {
+        if (is_static) {
+            throw AllocationError(
+                "Buffer::reserve not available for static buffer"
+            );
+        }
+
         if (capacity < buffer_size) {
             throw AllocationError(
                 "The new capacity is smaller than the current buffer size"
             );
         }
 
-        unsigned char* new_data = new unsigned char[buffer_size];
+        unsigned char* new_data = new unsigned char[capacity];
 
         if (data != nullptr) {
             memcpy(new_data, data, this->buffer_size);
@@ -403,7 +421,6 @@ namespace cppblowfish {
 
     Buffer Buffer::from_uint32(uint32_t x) {
         Buffer buffer = Buffer::create_static();
-        // buffer
 
         for (size_t i = 0; i < 4; i++) {
             buffer += static_cast<unsigned char>(x >> i * 8);
@@ -491,6 +508,9 @@ namespace cppblowfish {
             result += Buffer::from_uint32(left);
             result += Buffer::from_uint32(right);
         }
+
+        // Hack...
+        result.buffer_padding = data.buffer_padding;
 
         cipher = std::move(result);
     }

@@ -31,7 +31,7 @@ namespace cppblowfish {
         void padd(size_t count, unsigned char character);
         static Buffer from_uint32(uint32_t x);
         
-        // The order of members matter
+        // The order of members matters
         unsigned char* data = nullptr;
         size_t capacity = 0;
         size_t buffer_padding = 0;
