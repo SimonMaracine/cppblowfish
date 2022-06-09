@@ -1,8 +1,13 @@
 #include <string>
 #include <algorithm>
+#include <utility>
+#include <ostream>
 #include <string.h>
+#include <stddef.h>
 
 #include "cppblowfish.h"
+
+#define BUFFER_MAX_STATIC_SIZE offsetof(Buffer, is_static)
 
 static const uint32_t P[18] = {
     0x243F6A88u, 0x85A308D3u, 0x13198A2Eu,
@@ -228,7 +233,7 @@ static const uint32_t S[4][256] = {
 };
 
 namespace cppblowfish {
-    Buffer::Buffer(void* data, size_t size)
+    Buffer::Buffer(const void* data, size_t size)
         : buffer_size(size), capacity(size) {
         this->data = new unsigned char[size];
 
@@ -242,19 +247,98 @@ namespace cppblowfish {
     }
 
     Buffer::Buffer(const Buffer& other) {
+        data = other.data;
+        capacity = other.capacity;
+        buffer_padding = other.buffer_padding;
+        is_static = other.is_static;
+        buffer_size = other.buffer_size;
 
+        if (!other.is_static) {
+            data = new unsigned char[other.capacity];
+            memcpy(data, other.data, other.buffer_size + other.buffer_padding);
+        }
     }
 
     Buffer& Buffer::operator=(const Buffer& other) {
+        delete[] data;
 
+        data = other.data;
+        capacity = other.capacity;
+        buffer_padding = other.buffer_padding;
+        is_static = other.is_static;
+        buffer_size = other.buffer_size;
+
+        if (!other.is_static) {
+            data = new unsigned char[other.capacity];
+            memcpy(data, other.data, other.buffer_size + other.buffer_padding);
+        }
     }
 
     Buffer::Buffer(Buffer&& other) {
+        data = other.data;
+        capacity = other.capacity;
+        buffer_padding = other.buffer_padding;
+        is_static = other.is_static;
+        buffer_size = other.buffer_size;
 
+        other.data = nullptr;
     }
 
     Buffer& Buffer::operator=(Buffer&& other) {
+        delete[] data;
 
+        data = other.data;
+        capacity = other.capacity;
+        buffer_padding = other.buffer_padding;
+        is_static = other.is_static;
+        buffer_size = other.buffer_size;
+
+        other.data = nullptr;
+    }
+
+    Buffer& Buffer::operator+=(unsigned char character) {
+        if (is_static) {
+            if (buffer_size + 1 > BUFFER_MAX_STATIC_SIZE) {
+                throw AllocationError(
+                    "Buffer size exceeded the maximum static size: " + std::to_string(BUFFER_MAX_STATIC_SIZE)
+                );
+            }
+
+            unsigned char* self = reinterpret_cast<unsigned char*>(this);
+            self[buffer_size] = character;
+            buffer_size++;
+        } else {
+            if (buffer_size + 1 > capacity) {
+                reserve(buffer_size + 1);
+            }
+
+            data[buffer_size] = character;
+            buffer_size++;
+        }
+
+        return *this;
+    }
+
+    Buffer& Buffer::operator+=(const Buffer& other) {
+        if (is_static) {
+            if (buffer_size + other.buffer_size > BUFFER_MAX_STATIC_SIZE) {
+                throw AllocationError(
+                    "Buffer size exceeded the maximum static size: " + std::to_string(BUFFER_MAX_STATIC_SIZE)
+                );
+            }
+
+            memcpy(data + buffer_size, other.data, other.buffer_size);
+            buffer_size += other.buffer_size;
+        } else {
+            if (buffer_size + other.buffer_size > capacity) {
+                reserve(buffer_size + other.buffer_size);
+            }
+
+            memcpy(data + buffer_size, other.data, other.buffer_size);
+            buffer_size += other.buffer_size;
+        }
+
+        return *this;
     }
 
     void Buffer::reserve(size_t capacity) {
@@ -276,7 +360,36 @@ namespace cppblowfish {
         this->capacity = capacity;
     }
 
+    Buffer Buffer::create_static() {
+        Buffer buffer;
+
+        buffer.is_static = true;
+
+        return buffer;
+    }
+
+    Buffer Buffer::create_static(const void* data, size_t size) {
+        if (size > BUFFER_MAX_STATIC_SIZE) {
+            throw AllocationError(
+                "Static size is limited to " + std::to_string(BUFFER_MAX_STATIC_SIZE) + " bytes"
+            );
+        }
+
+        Buffer buffer;
+
+        buffer.is_static = true;
+        buffer.buffer_size = size;
+
+        memcpy(&buffer, data, size);
+
+        return buffer;
+    }
+
     void Buffer::padd(size_t count, unsigned char character) {
+        if (is_static) {
+            throw AllocationError("Buffer::padd not available for static buffer");
+        }
+
         if (buffer_size + count > capacity) {
             reserve(buffer_size + count);
         }
@@ -285,7 +398,30 @@ namespace cppblowfish {
             data[buffer_size + i] = character;
         }
 
-        padding = count;
+        buffer_padding = count;
+    }
+
+    Buffer Buffer::from_uint32(uint32_t x) {
+        Buffer buffer = Buffer::create_static();
+        // buffer
+
+        for (size_t i = 0; i < 4; i++) {
+            buffer += static_cast<unsigned char>(x >> i * 8);
+        }
+
+        return buffer;
+    }
+
+    std::ostream& operator<<(std::ostream& stream, Buffer& buffer) {
+        const unsigned char last_character = buffer.data[buffer.buffer_size - 1];
+        buffer.data[buffer.buffer_size - 1] = '\0';
+
+        stream << buffer.data;
+        stream << last_character;
+
+        buffer.data[buffer.buffer_size - 1] = last_character;
+
+        return stream;
     }
 
     BlowfishContext::BlowfishContext(const std::string& key) {
@@ -335,41 +471,47 @@ namespace cppblowfish {
         initialized = true;
     }
 
-    void BlowfishContext::encrypt(const Buffer& data, Buffer& cipher) {
+    void BlowfishContext::encrypt(Buffer& data, Buffer& cipher) {
         Buffer result;
-        Buffer data_copy = data;
+        result.reserve(sizeof(size_t) * data.size());
 
-        size_t length = data.size();
-        const size_t padding = length > 4 * 2 ? ((length / 4 * 2) + 1) * 4 * 2 - length : 4 * 2 - length;
+        const size_t len = data.size();
+        const size_t padding = len > 4 * 2 ? ((len / 4 * 2) + 1) * 4 * 2 - len : 4 * 2 - len;
 
-        data_copy.padd(padding, '\0');
+        data.padd(padding, '\0');
 
+        uint32_t left, right;
 
-        {
-        std::string cipher;
+        for (size_t i = 0; i < len + data.padding(); i += 8) {
+            left = *reinterpret_cast<uint32_t*>(data.get() + i);
+            right = *reinterpret_cast<uint32_t*>(data.get() + i + 4);
 
-        size_t length = string.length();
-        constexpr size_t j = sizeof(uint32_t);
-        const size_t rem = length > j * 2 ? ((length / j * 2) + 1) * j * 2 - length : j * 2 - length;
-        string.append(rem, '\0');
-        length = string.length();
+            _encrypt(&left, &right);
 
-        Blowfish blowfish(key);
-        uint32_t lm, rm;
-
-        for (size_t i = 0; i < length; i += 8) {
-            lm = *reinterpret_cast<uint32_t*>(const_cast<char*>(string.substr(i, j).c_str()));
-            rm = *reinterpret_cast<uint32_t*>(const_cast<char*>(string.substr(i + 4, j).c_str()));
-            blowfish.encrypt(lm, rm);
-            cipher += from_uint(lm) + from_uint(rm);
+            result += Buffer::from_uint32(left);
+            result += Buffer::from_uint32(right);
         }
 
-        return cipher;
-        }
+        cipher = std::move(result);
     }
 
     void BlowfishContext::decrypt(const Buffer& cipher, Buffer& data) {
+        Buffer result;
+        result.reserve(sizeof(size_t) * cipher.size());
 
+        uint32_t left, right;
+
+        for (size_t i = 0; i < cipher.size() + cipher.padding(); i += 8) {
+            left = *reinterpret_cast<uint32_t*>(cipher.get() + i);
+            right = *reinterpret_cast<uint32_t*>(cipher.get() + i + 4);
+
+            _decrypt(&left, &right);
+
+            result += Buffer::from_uint32(left);
+            result += Buffer::from_uint32(right);
+        }
+
+        data = std::move(result);
     }
 
     void BlowfishContext::_encrypt(uint32_t* left, uint32_t* right) {
