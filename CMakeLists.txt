@@ -8,7 +8,11 @@ project(cppblowfish
     LANGUAGES CXX
 )
 
-add_library(${LIB} STATIC "src/cppblowfish.cpp")
+add_library(${LIB} STATIC
+    "src/blowfish.cpp"
+    "src/buffer.cpp"
+)
+
 add_executable(${TEST} "test/main.cpp")
 
 target_include_directories(${LIB} PRIVATE "include")
