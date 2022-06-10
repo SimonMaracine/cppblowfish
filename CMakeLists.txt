@@ -13,7 +13,7 @@ add_library(${LIB} STATIC
     "src/buffer.cpp"
 )
 
-add_executable(${TEST} "test/main.cpp")
+add_executable(${TEST} "tests/main.cpp")
 
 target_include_directories(${LIB} PRIVATE "include")
 target_include_directories(${TEST} PRIVATE "include")

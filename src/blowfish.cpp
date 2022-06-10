@@ -231,6 +231,10 @@ static const uint32_t S_original[4][256] = {
 
 namespace cppblowfish {
     BlowfishContext::BlowfishContext(const std::string& key) {
+        if (key.size() < 4 || key.size() > 56) {
+            throw KeyError("Key must be between 32 bits and 448 bits (4 and 56 bytes respectively)");
+        }
+
         initialize(key);
     }
 
@@ -326,8 +330,8 @@ namespace cppblowfish {
     }
 
     void BlowfishContext::_encrypt(uint32_t* left, uint32_t* right) {
-        for (size_t i = 0; i < 16; i++) {
-            *left = *left ^ P_array[i];
+        for (size_t r = 0; r < 16; r++) {
+            *left = *left ^ P_array[r];
             *right = f(*left) ^ *right;
             std::swap(*left, *right);
         }
@@ -338,8 +342,8 @@ namespace cppblowfish {
     }
 
     void BlowfishContext::_decrypt(uint32_t* left, uint32_t* right) {
-        for (size_t i = 17; i > 1; i--) {
-            *left = *left ^ P_array[i];
+        for (size_t r = 17; r > 1; r--) {
+            *left = *left ^ P_array[r];
             *right = f(*left) ^ *right;
             std::swap(*left, *right);
         }

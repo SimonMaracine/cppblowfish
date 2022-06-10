@@ -19,6 +19,14 @@ namespace cppblowfish {
         AllocationError(const char* message)
             : std::logic_error(message) {}
     };
+
+    class KeyError : public std::logic_error {
+    public:
+        KeyError(const std::string& message)
+            : std::logic_error(message) {}
+        KeyError(const char* message)
+            : std::logic_error(message) {}
+    };
 }
 
 #endif  // _ERRORS_H_
