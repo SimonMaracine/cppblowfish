@@ -50,6 +50,8 @@ namespace cppblowfish {
             data = new unsigned char[other.capacity];
             memcpy(data, other.data, other.buffer_size + other.buffer_padding);
         }
+
+        return *this;
     }
 
     Buffer::Buffer(Buffer&& other) {
@@ -72,6 +74,8 @@ namespace cppblowfish {
         buffer_size = other.buffer_size;
 
         other.data = nullptr;
+
+        return *this;
     }
 
     Buffer& Buffer::operator+=(unsigned char character) {
