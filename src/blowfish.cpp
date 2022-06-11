@@ -289,7 +289,7 @@ namespace cppblowfish {
 
         input.padd(padding, 'J');
 
-        result.reserve(input.size() + padding);
+        result.reserve(len + padding);
 
         uint32_t left, right;
 

@@ -7,8 +7,8 @@
 #include "unit_test.h"
 
 DEFINE_TEST(basic_usage)
-    std::string key = "SimonCriesRightNow1234";
-    std::string message = "Hello, Jasmine. I miss you.";
+    std::string key = "mySECRETkey1234";
+    std::string message = "Hello, world. Why are you sad?";
 
     cppblowfish::BlowfishContext blowfish (key);
 
@@ -18,16 +18,15 @@ DEFINE_TEST(basic_usage)
 
     blowfish.encrypt(input, cipher);
 
-    ASSERT_EQ(cipher.get()[0], 'L')
-    ASSERT_EQ(cipher.get()[1], 'N')
-    ASSERT_EQ(cipher.get()[2], 242)
-    ASSERT_EQ(cipher.get()[3], 31)
-    ASSERT_EQ(cipher.get()[4], 130)
-    ASSERT_EQ(cipher.get()[5], 116)
-    ASSERT_EQ(cipher.get()[12], '?')
-    ASSERT_EQ(cipher.get()[13], 'M')
-    ASSERT_EQ(cipher.get()[14], 'O')
-    ASSERT_EQ(cipher.get()[28], 'T')
+    ASSERT_EQ(cipher.get()[0], 0x5D)
+    ASSERT_EQ(cipher.get()[1], 0x77)
+    ASSERT_EQ(cipher.get()[2], 0x54)
+    ASSERT_EQ(cipher.get()[3], 0xBC)
+    ASSERT_EQ(cipher.get()[4], 0xD4)
+    ASSERT_EQ(cipher.get()[5], 0xB4)
+    ASSERT_EQ(cipher.get()[12], 0x65)
+    ASSERT_EQ(cipher.get()[13], 0x25)
+    ASSERT_EQ(cipher.get()[29], 0x92)
 
     ASSERT_EQ(cipher.size(), 32)
 
@@ -40,17 +39,20 @@ DEFINE_TEST(basic_usage)
     ASSERT_EQ(output.get()[4], 'o')
     ASSERT_EQ(output.get()[5], ',')
     ASSERT_EQ(output.get()[6], ' ')
-    ASSERT_EQ(output.get()[12], 'n')
-    ASSERT_EQ(output.get()[13], 'e')
-    ASSERT_EQ(output.get()[14], '.')
-    ASSERT_EQ(output.get()[28], 'J')
+    ASSERT_EQ(output.get()[7], 'w')
+    ASSERT_EQ(output.get()[13], ' ')
+    ASSERT_EQ(output.get()[14], 'W')
+    ASSERT_EQ(output.get()[27], 'a')
+    ASSERT_EQ(output.get()[29], '?')
 
     ASSERT_EQ(output.size(), 32)
+
+    ASSERT_EQ(output.size() - output.padding(), message.size())
 END_DEFINE_TEST()
 
 DEFINE_TEST(writing_cipher_to_file)
-    std::string key = "SimonCriesRightNow1234";
-    std::string message = "Hello, Jasmine. I miss you.";
+    std::string key = "ThisIsMyKey19S";
+    std::string message = "And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works.";
 
     cppblowfish::BlowfishContext blowfish (key);
 
@@ -59,6 +61,17 @@ DEFINE_TEST(writing_cipher_to_file)
     cppblowfish::Buffer output;
 
     blowfish.encrypt(input, cipher);
+
+    ASSERT_EQ(cipher.get()[0], 0x25)
+    ASSERT_EQ(cipher.get()[1], 0xB7)
+    ASSERT_EQ(cipher.get()[2], 0x94)
+    ASSERT_EQ(cipher.get()[3], 0x0C)
+    ASSERT_EQ(cipher.get()[12], 0x2D)
+    ASSERT_EQ(cipher.get()[13], 0xAD)
+    ASSERT_EQ(cipher.get()[94], 0x74)
+    ASSERT_EQ(cipher.get()[95], 0xD1)
+
+    ASSERT_EQ(cipher.size(), 104)
 
     {
         std::ofstream file ("cipher.txt", std::ios::binary | std::ios::trunc);
@@ -79,6 +92,21 @@ DEFINE_TEST(writing_cipher_to_file)
     }
 
     blowfish.decrypt(cipher, output);
+
+    ASSERT_EQ(output.get()[0], 'A')
+    ASSERT_EQ(output.get()[1], 'n')
+    ASSERT_EQ(output.get()[2], 'd')
+    ASSERT_EQ(output.get()[3], ' ')
+    ASSERT_EQ(output.get()[4], 't')
+    ASSERT_EQ(output.get()[5], 'h')
+    ASSERT_EQ(output.get()[13], ' ')
+    ASSERT_EQ(output.get()[14], 'l')
+    ASSERT_EQ(output.get()[94], 's')
+    ASSERT_EQ(output.get()[95], '.')
+
+    ASSERT_EQ(output.size(), 104)
+
+    ASSERT_EQ(output.size() - output.padding(), message.size())
 END_DEFINE_TEST()
 
 int main() {
@@ -87,8 +115,8 @@ int main() {
     TEST(writing_cipher_to_file)
     END_UNIT_TEST()
 
-    std::string key = "SimonCriesRightNow1234";
-    std::string message = "Hello, Jasmine. I miss you.";
+    std::string key = "mySECRETkey1234";
+    std::string message = "Hello, world. Why are you sad?";
 
     cppblowfish::BlowfishContext blowfish (key);
 
