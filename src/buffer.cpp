@@ -8,14 +8,24 @@
 
 #define MAX_STATIC_SIZE offsetof(Buffer, is_static)
 
+static constexpr size_t DATA_OFFSET = sizeof(size_t);
+
 namespace cppblowfish {
+    Buffer::Buffer()
+        : capacity(DATA_OFFSET) {
+        data = new unsigned char[DATA_OFFSET];
+        memset(data, 0, DATA_OFFSET);
+    }
+
     Buffer::Buffer(const void* data, size_t size)
-        : buffer_size(size), capacity(size) {
-        this->data = new unsigned char[size];
+        : buffer_size(size), capacity(size + DATA_OFFSET) {
+        this->data = new unsigned char[size + DATA_OFFSET];
 
         if (data != nullptr) {
-            memcpy(this->data, data, size);
+            memcpy(this->data + DATA_OFFSET, data, size);
         }
+
+        memset(this->data, 0, DATA_OFFSET);
     }
 
     Buffer::~Buffer() {
@@ -91,11 +101,11 @@ namespace cppblowfish {
             self[buffer_size] = character;
             buffer_size++;
         } else {
-            if (buffer_size + 1 > capacity) {
-                reserve(buffer_size + 1);
+            if (buffer_size + 1 + DATA_OFFSET > capacity) {
+                reserve(buffer_size + 1 + DATA_OFFSET);
             }
 
-            data[buffer_size] = character;
+            data[buffer_size + DATA_OFFSET] = character;
             buffer_size++;
         }
 
@@ -115,19 +125,19 @@ namespace cppblowfish {
             if (other.is_static) {
                 memcpy(self + buffer_size, &other, other.buffer_size);
             } else {
-                memcpy(self + buffer_size, other.data, other.buffer_size);
+                memcpy(self + buffer_size, other.data + DATA_OFFSET, other.buffer_size);
             }
 
             buffer_size += other.buffer_size;
         } else {
-            if (buffer_size + other.buffer_size > capacity) {
-                reserve(buffer_size + other.buffer_size);
+            if (buffer_size + other.buffer_size + DATA_OFFSET > capacity) {
+                reserve(buffer_size + other.buffer_size + DATA_OFFSET);
             }
 
             if (other.is_static) {
-                memcpy(data + buffer_size, &other, other.buffer_size);
+                memcpy(data + buffer_size + DATA_OFFSET, &other, other.buffer_size);
             } else {
-                memcpy(data + buffer_size, other.data, other.buffer_size);
+                memcpy(data + buffer_size + DATA_OFFSET, other.data + DATA_OFFSET, other.buffer_size);
             }
 
             buffer_size += other.buffer_size;
@@ -139,7 +149,7 @@ namespace cppblowfish {
     unsigned char* Buffer::get() const {
         assert(!is_static && "Buffer::get not available for static buffer");
 
-        return data;
+        return data + DATA_OFFSET;
     }
 
     size_t Buffer::padding() const {
@@ -152,9 +162,7 @@ namespace cppblowfish {
         assert(!is_static && "Buffer::reserve not available for static buffer");
 
         if (capacity < buffer_size) {
-            throw AllocationError(
-                "The new capacity is smaller than the current buffer size"
-            );
+            throw AllocationError("The new capacity is smaller than the current buffer size");
         }
 
         unsigned char* new_data = new unsigned char[capacity];
@@ -194,19 +202,45 @@ namespace cppblowfish {
         return buffer;
     }
 
+    Buffer Buffer::from_raw_data(const void* data, size_t size) {
+        Buffer buffer;
+
+        buffer.data = new unsigned char[size];
+
+        if (data != nullptr) {
+            memcpy(buffer.data, data, size);
+        }
+
+        buffer.buffer_size = size;
+        buffer.capacity = size;
+        buffer.buffer_padding = *reinterpret_cast<size_t*>(const_cast<void*>(data));
+
+        return buffer;
+    }
+
+    void Buffer::write_raw_data(std::ostream& stream) {
+        if (is_static) {
+            assert(buffer_padding == 0);
+            stream.write(reinterpret_cast<const char*>(this), buffer_size);
+        } else {
+            stream.write(reinterpret_cast<const char*>(data), buffer_size + DATA_OFFSET);
+        }
+    }
+
     void Buffer::padd(size_t padd_count, unsigned char character) {
         assert(!is_static && "Buffer::padd not available for static buffer");  // TODO maybe use exceptions instead
 
-        if (buffer_size + padd_count > capacity) {
-            reserve(buffer_size + padd_count);
+        if (buffer_size + padd_count + DATA_OFFSET > capacity) {
+            reserve(buffer_size + padd_count + DATA_OFFSET);
         }
 
         for (size_t i = 0; i < padd_count; i++) {
-            data[buffer_size + i] = character;
+            data[buffer_size + i + DATA_OFFSET] = character;
         }
 
         buffer_padding = padd_count;
         buffer_size += padd_count;
+        *data = padd_count;
     }
 
     Buffer Buffer::from_uint32(uint32_t x) {
@@ -221,9 +255,11 @@ namespace cppblowfish {
 
     std::ostream& operator<<(std::ostream& stream, const Buffer& buffer) {
         if (buffer.is_static) {
+            assert(buffer.buffer_padding == 0);
             stream.write(reinterpret_cast<const char*>(&buffer), buffer.buffer_size);
         } else {
-            stream.write(reinterpret_cast<const char*>(buffer.data), buffer.buffer_size);
+            stream.write(reinterpret_cast<const char*>(buffer.data + DATA_OFFSET),
+                    buffer.buffer_size - buffer.buffer_padding - DATA_OFFSET);
         }
 
         return stream;

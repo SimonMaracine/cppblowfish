@@ -76,7 +76,7 @@ DEFINE_TEST(writing_cipher_to_file)
     {
         std::ofstream file ("cipher.txt", std::ios::binary | std::ios::trunc);
         if (!file.is_open()) { ASSERT(false) }
-        file << cipher;
+        cipher.write_raw_data(file);
     }
 
     {
@@ -87,7 +87,7 @@ DEFINE_TEST(writing_cipher_to_file)
         file.seekg(0, file.beg);
         char* buff = new char[length];
         file.read(buff, length);
-        cipher = cppblowfish::Buffer(buff, length);
+        cipher = cppblowfish::Buffer::from_raw_data(buff, length);
         delete[] buff;
     }
 
