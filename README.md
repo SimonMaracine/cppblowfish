@@ -6,6 +6,15 @@ I use this library for myself. If it works for me, then maybe it works for you a
 But use it at your own risk.  
 Check the header files for _some_ documentation.
 
+To easily use this library, just include this repository as a submodule (or better fork the repository beforehand ans use the forked version):  
+`git submodule add https://github.com/SimonMaracine/cppblowfish.git <path/to/submodule/folder>`
+
+Then write this in CMakeLists.txt:
+
+    add_subdirectory(<path/to/submodule/folder>)
+    target_include_directories(<your_target> PUBLIC <path/to/submodule/folder>/include)
+    target_link_libraries(<your_target> PUBLIC cppblowfish)
+
 **Basic usage:**
 
     // Define the key and some arbitrary data 
