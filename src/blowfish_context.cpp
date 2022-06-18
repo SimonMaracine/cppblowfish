@@ -3,7 +3,7 @@
 #include <utility>
 #include <string.h>
 
-#include "internal/blowfish.h"
+#include "internal/blowfish_context.h"
 #include "internal/errors.h"
 
 static const uint32_t P_original[18] = {
@@ -287,7 +287,7 @@ namespace cppblowfish {
         const size_t len = input.size();
         const size_t padding = len > 4 * 2 ? ((len / (4 * 2)) + 1) * 4 * 2 - len : 4 * 2 - len;
 
-        input.padd(padding, 'J');
+        input.padd(padding, '\0');
 
         result.reserve(len + padding);
 
@@ -304,6 +304,7 @@ namespace cppblowfish {
         }
 
         result.buffer_padding = input.buffer_padding;
+        memcpy(result.data, &input.buffer_padding, sizeof(input.buffer_padding));
 
         cipher = std::move(result);
     }
@@ -325,6 +326,7 @@ namespace cppblowfish {
         }
 
         result.buffer_padding = cipher.buffer_padding;
+        memcpy(result.data, &cipher.buffer_padding, sizeof(cipher.buffer_padding));
 
         output = std::move(result);
     }

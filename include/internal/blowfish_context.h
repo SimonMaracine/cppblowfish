@@ -1,5 +1,5 @@
-#ifndef _BLOWFISH_H_
-#define _BLOWFISH_H_
+#ifndef _BLOWFISH_CONTEXT_H_
+#define _BLOWFISH_CONTEXT_H_
 
 #include <string>
 
@@ -13,7 +13,7 @@ namespace cppblowfish {
         ~BlowfishContext() = default;
 
         void initialize(const std::string& key);
-        void encrypt(Buffer& input, Buffer& cipher);
+        void encrypt(Buffer& input, Buffer& cipher);  // This can modify the input by adding padding
         void decrypt(const Buffer& cipher, Buffer& output);
     private:
         void _encrypt(uint32_t* left, uint32_t* right);
@@ -26,4 +26,4 @@ namespace cppblowfish {
     };
 }
 
-#endif  // _BLOWFISH_H_
+#endif  // _BLOWFISH_CONTEXT_H_

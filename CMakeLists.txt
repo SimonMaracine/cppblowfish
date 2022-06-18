@@ -9,11 +9,25 @@ project(cppblowfish
 )
 
 add_library(${LIB} STATIC
-    "src/blowfish.cpp"
+    "src/blowfish_context.cpp"
     "src/buffer.cpp"
 )
 
 add_executable(${TEST} "tests/main.cpp")
+
+if(UNIX)
+    target_compile_options(${LIB} PUBLIC
+        -Wall -Wextra
+    )
+    target_compile_options(${TEST} PUBLIC
+        -Wall -Wextra
+    )
+elseif(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    target_compile_options(${LIB} PUBLIC -Wall)
+    target_compile_options(${TEST} PUBLIC -Wall)
+else()
+    message(WARNING "Compiler is not MSVC or other and warnings were not enabled")
+endif()
 
 target_include_directories(${LIB} PRIVATE "include")
 target_include_directories(${TEST} PRIVATE "include")
