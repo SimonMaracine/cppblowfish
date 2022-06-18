@@ -15,6 +15,10 @@ Then write this in CMakeLists.txt:
     target_include_directories(<your_target> PUBLIC <path/to/submodule/folder>/include)
     target_link_libraries(<your_target> PUBLIC cppblowfish)
 
+To build without tests include this before `add_subdirectory(...)`:
+
+    set(CPPBLOWFISH_BUILD_TESTS OFF)
+
 **Basic usage:**
 
     // Define the key and some arbitrary data 

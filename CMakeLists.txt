@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.20)
 set(LIB "cppblowfish")
 set(TEST "test")
 
+if(NOT DEFINED CPPBLOWFISH_BUILD_TESTS)
+    set(CPPBLOWFISH_BUILD_TESTS ON)
+endif()
+
 project(cppblowfish
     VERSION 0.1.0
     LANGUAGES CXX
@@ -21,15 +25,19 @@ add_library(${LIB} STATIC
     ${HEADERS_FOR_WINDOWS}
 )
 
-add_executable(${TEST} "tests/main.cpp")
+if(CPPBLOWFISH_BUILD_TESTS)
+    add_executable(${TEST} "tests/main.cpp")
+endif()
 
 if(UNIX)
     target_compile_options(${LIB} PUBLIC
         -Wall -Wextra
     )
-    target_compile_options(${TEST} PUBLIC
-        -Wall -Wextra
-    )
+    if(CPPBLOWFISH_BUILD_TESTS)
+        target_compile_options(${TEST} PUBLIC
+            -Wall -Wextra
+        )
+    endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     target_compile_options(${LIB} PUBLIC -Wall)
     target_compile_options(${TEST} PUBLIC -Wall)
@@ -38,5 +46,7 @@ else()
 endif()
 
 target_include_directories(${LIB} PRIVATE "include")
-target_include_directories(${TEST} PRIVATE "include")
-target_link_libraries(${TEST} PRIVATE ${LIB})
+if(CPPBLOWFISH_BUILD_TESTS)
+    target_include_directories(${TEST} PRIVATE "include")
+    target_link_libraries(${TEST} PRIVATE ${LIB})
+endif()
