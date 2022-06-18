@@ -3,7 +3,8 @@
 ### A small C++ encryption library implementing the blowfish algorithm
 
 I use this library for myself. If it works for me, then maybe it works for you as well.
-But use it at your own risk.
+But use it at your own risk.  
+Check the header files for _some_ documentation.
 
 **Basic usage:**
 
