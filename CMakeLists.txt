@@ -8,9 +8,17 @@ project(cppblowfish
     LANGUAGES CXX
 )
 
+set(HEADERS_FOR_WINDOWS
+    "include/internal/blowfish_context.h"
+    "include/internal/buffer.h"
+    "include/internal/errors.h"
+    "include/cppblowfish.h"
+)
+
 add_library(${LIB} STATIC
     "src/blowfish_context.cpp"
     "src/buffer.cpp"
+    ${HEADERS_FOR_WINDOWS}
 )
 
 add_executable(${TEST} "tests/main.cpp")
