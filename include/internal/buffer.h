@@ -23,6 +23,8 @@
 */
 
 namespace cppblowfish {
+    constexpr size_t BUFFER_OFFSET = sizeof(size_t);
+
     enum Staticity {
         NonStatic = 0,
         Static = 1
@@ -55,6 +57,8 @@ namespace cppblowfish {
 
         // Writes all the data (data + padding + padding size)
         void write_whole_data(std::ostream& stream) const;
+        void write_whole_data(unsigned char* out) const;  // out is a pointer to a buffer allocated by you
+                                                          // and should have the size size() + BUFFER_OFFSET
 
         static constexpr size_t max_static_size();
     private:

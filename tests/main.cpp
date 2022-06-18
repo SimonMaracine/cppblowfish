@@ -1,3 +1,8 @@
+/*
+    I know that these teste are not as rigorous as they could be and
+    they don't really test all the functionality of the library.
+    But still it looks okay for me. I'm just lazy about it.
+*/
 #include <string>
 #include <iostream>
 #include <fstream>

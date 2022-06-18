@@ -8,8 +8,6 @@
 
 #define MAX_STATIC_SIZE offsetof(Buffer, static_)
 
-static constexpr size_t BUFFER_OFFSET = sizeof(size_t);
-
 namespace cppblowfish {
     Buffer::Buffer(Staticity static_)
         : static_(static_) {
@@ -219,6 +217,15 @@ namespace cppblowfish {
             stream.write(reinterpret_cast<const char*>(this), buffer_size);
         } else {
             stream.write(reinterpret_cast<const char*>(data), buffer_size + BUFFER_OFFSET);
+        }
+    }
+
+    void Buffer::write_whole_data(unsigned char* out) const {
+        if (static_) {
+            assert(buffer_padding == 0);
+            memcpy(out, reinterpret_cast<unsigned char*>(const_cast<Buffer*>(this)), buffer_size);
+        } else {
+            memcpy(out, reinterpret_cast<const char*>(data), buffer_size + BUFFER_OFFSET);
         }
     }
 
