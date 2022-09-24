@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <assert.h>
 
-#include "internal/buffer.h"
-#include "internal/errors.h"
+#include "cppblowfish/internal/buffer.h"
+#include "cppblowfish/internal/errors.h"
 
 #define MAX_STATIC_SIZE offsetof(Buffer, static_)
 

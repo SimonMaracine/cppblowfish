@@ -3,8 +3,8 @@
 #include <utility>
 #include <string.h>
 
-#include "internal/blowfish_context.h"
-#include "internal/errors.h"
+#include "cppblowfish/internal/blowfish_context.h"
+#include "cppblowfish/internal/errors.h"
 
 static const uint32_t P_original[18] = {
     0x243F6A88u, 0x85A308D3u, 0x13198A2Eu,

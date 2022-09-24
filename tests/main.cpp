@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string.h>
 
-#include <cppblowfish.h>
+#include <cppblowfish/cppblowfish.h>
 
 #include "unit_test.h"
 

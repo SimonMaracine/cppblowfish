@@ -8,15 +8,15 @@ if(NOT DEFINED CPPBLOWFISH_BUILD_TESTS)
 endif()
 
 project(cppblowfish
-    VERSION 0.1.0
+    VERSION 0.1.1
     LANGUAGES CXX
 )
 
 set(HEADERS_FOR_WINDOWS
-    "include/internal/blowfish_context.h"
-    "include/internal/buffer.h"
-    "include/internal/errors.h"
-    "include/cppblowfish.h"
+    "include/cppblowfish/internal/blowfish_context.h"
+    "include/cppblowfish/internal/buffer.h"
+    "include/cppblowfish/internal/errors.h"
+    "include/cppblowfish/cppblowfish.h"
 )
 
 add_library(${LIB} STATIC

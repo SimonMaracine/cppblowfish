@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "internal/buffer.h"
+#include "buffer.h"
 
 namespace cppblowfish {
     class BlowfishContext {
