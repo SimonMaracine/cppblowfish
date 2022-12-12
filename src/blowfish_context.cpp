@@ -266,7 +266,7 @@ namespace cppblowfish {
 
         for (size_t i = 0; i < 18; i += 2) {
             _encrypt(&left, &right);
-            P_array[i] = left; 
+            P_array[i] = left;
             P_array[i + 1] = right;
         }
 
@@ -285,7 +285,9 @@ namespace cppblowfish {
         Buffer result;
 
         const size_t len = input.size();
-        const size_t padding = len > 4 * 2 ? ((len / (4 * 2)) + 1) * 4 * 2 - len : 4 * 2 - len;
+        const size_t padding = (
+            len > 4 * 2 ? ((len / (4 * 2)) + 1) * 4 * 2 - len : 4 * 2 - len
+        );
 
         input.padd(padding, '\0');
 

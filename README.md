@@ -1,35 +1,38 @@
 # cppblowfish
 
-### A small C++ encryption library implementing the blowfish algorithm
+## A small C++ encryption library implementing the blowfish algorithm
 
 I use this library for myself. If it works for me, then maybe it works for you as well.
-But use it at your own risk.  
+But use it at your own risk.
+
 Check the header files for _some_ documentation.
 
-To easily use this library, just include this repository as a submodule (or better fork the repository beforehand and use the forked version):  
+To easily use this library, just include this repository as a submodule (or better fork the repository beforehand and use the forked version):
+
 `git submodule add https://github.com/SimonMaracine/cppblowfish.git <path/to/submodule/folder>`
 
 Then write this in CMakeLists.txt:
 
     add_subdirectory(<path/to/submodule/folder>)
-    target_include_directories(<your_target> PUBLIC <path/to/submodule/folder>/include)
-    target_link_libraries(<your_target> PUBLIC cppblowfish)
+    target_link_libraries(<your_target> PRIVATE cppblowfish)
+
+The CMake script build the library as static.
 
 To build without tests, include this before `add_subdirectory(...)`:
 
     set(CPPBLOWFISH_BUILD_TESTS OFF)
 
-**Basic usage:**
+## Basic usage
 
-    // Define the key and some arbitrary data 
+    // Define the key and some arbitrary data
     std::string key = "mySECRETkey1234";
     std::string message = "Hello, world. Why are you sad?";
 
     // Create the context using the key
-    cppblowfish::BlowfishContext blowfish (key);
+    cppblowfish::BlowfishContext blowfish {key};
 
     // Define the buffers used
-    cppblowfish::Buffer input (message.c_str(), message.size());
+    cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
 
@@ -39,7 +42,7 @@ To build without tests, include this before `add_subdirectory(...)`:
     std::cout << "cipher: " << cipher << std::endl;
     std::cout << "cipher size: " << cipher.size() << std::endl;
 
-    // Maybe do some other stuff
+    // Maybe do some other stuff...
 
     // Decrypt the data in the cipher and output it in the output buffer
     blowfish.decrypt(cipher, output);
@@ -48,24 +51,26 @@ To build without tests, include this before `add_subdirectory(...)`:
     std::cout << "output size: " << output.size() << std::endl;
 
     // Get the data
-    unsigned char* data = new unsigned char[output.size() - output.padding()];
-    memcpy(data, output.get(), output.size() - output.padding());
+    const size_t DATA_SIZE = output.size() - output.padding();
+    unsigned char* data = new unsigned char[DATA_SIZE];
+    memcpy(data, output.get(), DATA_SIZE);
 
-**Writing cipher to file and reading back:**
+## Writing cipher to file and reading back
 
     std::string key = "ThisIsMyKey19S";
     std::string message = "And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works.";
 
-    cppblowfish::BlowfishContext blowfish (key);
+    cppblowfish::BlowfishContext blowfish {key};
 
-    cppblowfish::Buffer input (message.c_str(), message.size());
+    cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
 
     blowfish.encrypt(input, cipher);
 
+    // Write cipher to file
     {
-        std::ofstream file ("cipher.txt", std::ios::binary | std::ios::trunc);
+        std::ofstream file {"cipher.txt", std::ios::binary | std::ios::trunc};
         if (!file.is_open()) { exit(1); }
 
         // Write **all** the contents of the buffer into the file
@@ -76,12 +81,13 @@ To build without tests, include this before `add_subdirectory(...)`:
         // cipher.write_whole_data(buffer);
     }
 
-    // Maybe do other stuff
+    // Maybe do other stuff...
 
     cppblowfish::Buffer cipher2;
 
+    // Read cipher back from file
     {
-        std::ifstream file ("cipher.txt", std::ios::binary);
+        std::ifstream file {"cipher.txt", std::ios::binary};
         if (!file.is_open()) { exit(1); }
 
         file.seekg(0, file.end);
@@ -99,5 +105,7 @@ To build without tests, include this before `add_subdirectory(...)`:
 
     blowfish.decrypt(cipher2, output);
 
-    unsigned char* data = new unsigned char[output.size() - output.padding()];
-    memcpy(data, output.get(), output.size() - output.padding());
+    // Get the data
+    const size_t DATA_SIZE = output.size() - output.padding();
+    unsigned char* data = new unsigned char[DATA_SIZE];
+    memcpy(data, output.get(), DATA_SIZE);

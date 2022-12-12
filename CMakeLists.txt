@@ -3,16 +3,14 @@ cmake_minimum_required(VERSION 3.20)
 set(LIB "cppblowfish")
 set(TEST "test")
 
-if(NOT DEFINED CPPBLOWFISH_BUILD_TESTS)
-    set(CPPBLOWFISH_BUILD_TESTS ON)
-endif()
+option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside library" ON)
 
 project(cppblowfish
-    VERSION 0.1.1
+    VERSION 0.1.2
     LANGUAGES CXX
 )
 
-set(HEADERS_FOR_WINDOWS
+set(HEADERS
     "include/cppblowfish/internal/blowfish_context.h"
     "include/cppblowfish/internal/buffer.h"
     "include/cppblowfish/internal/errors.h"
@@ -22,7 +20,7 @@ set(HEADERS_FOR_WINDOWS
 add_library(${LIB} STATIC
     "src/blowfish_context.cpp"
     "src/buffer.cpp"
-    ${HEADERS_FOR_WINDOWS}
+    ${HEADERS}
 )
 
 if(CPPBLOWFISH_BUILD_TESTS)
@@ -30,25 +28,23 @@ if(CPPBLOWFISH_BUILD_TESTS)
 endif()
 
 if(UNIX)
-    target_compile_options(${LIB} PUBLIC
-        -Wall -Wextra
-    )
+    target_compile_options(${LIB} PRIVATE -Wall -Wextra)
+
     if(CPPBLOWFISH_BUILD_TESTS)
-        target_compile_options(${TEST} PUBLIC
-            -Wall -Wextra
-        )
+        target_compile_options(${TEST} PRIVATE -Wall -Wextra)
     endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-    target_compile_options(${LIB} PUBLIC /W3)
+    target_compile_options(${LIB} PRIVATE /W3)
+
     if(CPPBLOWFISH_BUILD_TESTS)
-        target_compile_options(${TEST} PUBLIC /W3)
+        target_compile_options(${TEST} PRIVATE /W3)
     endif()
 else()
-    message(WARNING "Compiler is not MSVC or other and warnings were not enabled")
+    message(WARNING "Compiler is not MSVC or GCC and warnings were not enabled")
 endif()
 
-target_include_directories(${LIB} PRIVATE "include")
+target_include_directories(${LIB} PUBLIC "include")
+
 if(CPPBLOWFISH_BUILD_TESTS)
-    target_include_directories(${TEST} PRIVATE "include")
     target_link_libraries(${TEST} PRIVATE ${LIB})
 endif()

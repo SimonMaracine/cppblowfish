@@ -1,7 +1,7 @@
 /*
     I know that these teste are not as rigorous as they could be and
     they don't really test all the functionality of the library.
-    But still it looks okay for me. I'm just lazy about it.
+    But still it looks okay to me. I'm just lazy about it.
 */
 #include <string>
 #include <iostream>
@@ -16,9 +16,9 @@ DEFINE_TEST(basic_usage)
     std::string key = "mySECRETkey1234";
     std::string message = "Hello, world. Why are you sad?";
 
-    cppblowfish::BlowfishContext blowfish (key);
+    cppblowfish::BlowfishContext blowfish {key};
 
-    cppblowfish::Buffer input (message.c_str(), message.size());
+    cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
 
@@ -64,9 +64,9 @@ DEFINE_TEST(writing_cipher_to_file)
     std::string key = "ThisIsMyKey19S";
     std::string message = "And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works.";
 
-    cppblowfish::BlowfishContext blowfish (key);
+    cppblowfish::BlowfishContext blowfish {key};
 
-    cppblowfish::Buffer input (message.c_str(), message.size());
+    cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
 
@@ -87,13 +87,13 @@ DEFINE_TEST(writing_cipher_to_file)
     ASSERT_EQ(cipher.padding(), 8)
 
     {
-        std::ofstream file ("cipher.txt", std::ios::binary | std::ios::trunc);
+        std::ofstream file {"cipher.txt", std::ios::binary | std::ios::trunc};
         if (!file.is_open()) { ASSERT(false) }
         cipher.write_whole_data(file);
     }
 
     {
-        std::ifstream file ("cipher.txt", std::ios::binary);
+        std::ifstream file {"cipher.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         file.seekg(0, file.end);
         const size_t length = file.tellg();
@@ -126,7 +126,7 @@ END_DEFINE_TEST()
 DEFINE_TEST(buffer)
     constexpr size_t size = 4;
     char data[size] = { 'L', 'i', 'n', 'u' };
-    cppblowfish::Buffer buffer (data, size);
+    cppblowfish::Buffer buffer {data, size};
 
     ASSERT_EQ(memcmp(buffer.get(), data, size), 0)
     ASSERT_EQ(buffer.size(), size)
@@ -140,7 +140,7 @@ DEFINE_TEST(buffer)
 
     constexpr size_t size2 = 9;
     char data2[size2] = { ' ', 'i', 's', ' ', 'g', 'r', 'e', 'a', 't' };
-    cppblowfish::Buffer buffer2 (data2, size2);
+    cppblowfish::Buffer buffer2 {data2, size2};
     buffer += buffer2;
 
     ASSERT_EQ(memcmp(buffer.get(), data, size), 0)
@@ -155,7 +155,7 @@ END_DEFINE_TEST()
 
 DEFINE_TEST(buffer_static)
     {
-        cppblowfish::Buffer buffer (cppblowfish::Static);
+        cppblowfish::Buffer buffer {cppblowfish::Static};
 
         buffer += 'G';
         buffer += 'o';
@@ -172,7 +172,7 @@ DEFINE_TEST(buffer_static)
         const char* data = "Hello, world! What's up? I haven't seen you since yesterday.";
 
         try {
-            cppblowfish::Buffer buffer (data, strlen(data), cppblowfish::Static);
+            cppblowfish::Buffer buffer {data, strlen(data), cppblowfish::Static};
             ASSERT(false)
         } catch (cppblowfish::AllocationError& e) {}
     }
@@ -189,9 +189,9 @@ int main() {
     std::string key = "mySECRETkey1234";
     std::string message = "Hello, world. Why are you sad?";
 
-    cppblowfish::BlowfishContext blowfish (key);
+    cppblowfish::BlowfishContext blowfish {key};
 
-    cppblowfish::Buffer input (message.c_str(), message.size());
+    cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
 

@@ -43,7 +43,7 @@ namespace cppblowfish {
         Buffer& operator+=(unsigned char character);
         Buffer& operator+=(const Buffer& other);
 
-        // Pointer to the data with an offset of BUFFER_OFFSET (padding size)
+        // Pointer to the actual data (with an offset of BUFFER_OFFSET (padding size))
         unsigned char* get() const;
 
         size_t size() const { return buffer_size; }
@@ -58,7 +58,7 @@ namespace cppblowfish {
         // Writes all the data (data + padding + padding size)
         void write_whole_data(std::ostream& stream) const;
         void write_whole_data(unsigned char* out) const;  // out is a pointer to a buffer allocated by you
-                                                          // and should have the size size() + BUFFER_OFFSET
+                                                          // and should have the size as size() + BUFFER_OFFSET
 
         static constexpr size_t max_static_size();
     private:

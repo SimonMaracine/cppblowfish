@@ -12,6 +12,11 @@ namespace cppblowfish {
         explicit BlowfishContext(const std::string& key);
         ~BlowfishContext() = default;
 
+        BlowfishContext(const BlowfishContext&) = default;
+        BlowfishContext& operator=(const BlowfishContext&) = default;
+        BlowfishContext(BlowfishContext&&) = default;
+        BlowfishContext& operator=(BlowfishContext&&) = default;
+
         void initialize(const std::string& key);
         void encrypt(Buffer& input, Buffer& cipher);  // This can modify the input by adding padding
         void decrypt(const Buffer& cipher, Buffer& output);
