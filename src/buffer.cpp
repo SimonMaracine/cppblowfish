@@ -251,7 +251,7 @@ namespace cppblowfish {
     }
 
     Buffer Buffer::from_uint32(uint32_t x) {
-        Buffer buffer (Static);
+        Buffer buffer {Static};
 
         for (size_t i = 0; i < 4; i++) {
             buffer += static_cast<unsigned char>(x >> i * 8);
@@ -265,8 +265,10 @@ namespace cppblowfish {
             assert(buffer.buffer_padding == 0);
             stream.write(reinterpret_cast<const char*>(&buffer), buffer.buffer_size);
         } else {
-            stream.write(reinterpret_cast<const char*>(buffer.data + BUFFER_OFFSET),
-                    buffer.buffer_size - buffer.buffer_padding);
+            stream.write(
+                reinterpret_cast<const char*>(buffer.data + BUFFER_OFFSET),
+                buffer.buffer_size - buffer.buffer_padding
+            );
         }
 
         return stream;

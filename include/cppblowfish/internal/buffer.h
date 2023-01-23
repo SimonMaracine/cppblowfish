@@ -35,6 +35,7 @@ namespace cppblowfish {
         Buffer(Staticity static_ = NonStatic);
         Buffer(const void* data, size_t size, Staticity static_ = NonStatic);
         ~Buffer();
+
         Buffer(const Buffer& other);
         Buffer& operator=(const Buffer& other);
         Buffer(Buffer&& other);

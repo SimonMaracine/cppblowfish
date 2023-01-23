@@ -6,7 +6,7 @@ set(TEST "test")
 option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside library" ON)
 
 project(cppblowfish
-    VERSION 0.1.2
+    VERSION 0.2.0
     LANGUAGES CXX
 )
 
@@ -47,4 +47,9 @@ target_include_directories(${LIB} PUBLIC "include")
 
 if(CPPBLOWFISH_BUILD_TESTS)
     target_link_libraries(${TEST} PRIVATE ${LIB})
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(${LIB} PRIVATE NDEBUG)
+    message(STATUS "Compiling cppblowfish in release mode")
 endif()

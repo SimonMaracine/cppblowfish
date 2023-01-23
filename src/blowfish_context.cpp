@@ -235,10 +235,18 @@ namespace cppblowfish {
             throw KeyError("Key must be between 32 bits and 448 bits (4 and 56 bytes respectively)");
         }
 
-        initialize(key);
+        initialize(key.data(), key.size());
     }
 
-    void BlowfishContext::initialize(const std::string& key) {
+    BlowfishContext::BlowfishContext(const void* key, size_t size) {
+        if (size < 4 || size > 56) {
+            throw KeyError("Key must be between 32 bits and 448 bits (4 and 56 bytes respectively)");
+        }
+
+        initialize(key, size);
+    }
+
+    void BlowfishContext::initialize(const void* key, size_t size) {
         if (initialized) {
             throw AlreadyInitializedError(
                 "Context has already been initialized; to change the key, create another context"
@@ -254,8 +262,8 @@ namespace cppblowfish {
             k = 0x00;
 
             for (size_t j = 0; j < 4; j++) {
-                k = (k << 8) | static_cast<uint8_t>(key[p]);
-                p = (p + 1) % key.size();
+                k = (k << 8) | static_cast<const uint8_t*>(key)[p];
+                p = (p + 1) % size;
             }
 
             P_array[i] ^= k;
@@ -286,7 +294,11 @@ namespace cppblowfish {
 
         const size_t len = input.size();
         const size_t padding = (
-            len > 4 * 2 ? ((len / (4 * 2)) + 1) * 4 * 2 - len : 4 * 2 - len
+            len > 4 * 2
+            ?
+            ((len / (4 * 2)) + 1) * 4 * 2 - len
+            :
+            4 * 2 - len
         );
 
         input.padd(padding, '\0');
