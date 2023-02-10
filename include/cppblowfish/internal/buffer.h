@@ -23,7 +23,7 @@
 */
 
 namespace cppblowfish {
-    constexpr size_t BUFFER_OFFSET = sizeof(size_t);
+    inline constexpr size_t BUFFER_OFFSET = sizeof(size_t);
 
     enum Staticity {
         NonStatic = 0,
@@ -38,14 +38,14 @@ namespace cppblowfish {
 
         Buffer(const Buffer& other);
         Buffer& operator=(const Buffer& other);
-        Buffer(Buffer&& other);
-        Buffer& operator=(Buffer&& other);
+        Buffer(Buffer&& other) noexcept;
+        Buffer& operator=(Buffer&& other) noexcept;
 
         Buffer& operator+=(unsigned char character);
         Buffer& operator+=(const Buffer& other);
 
         // Pointer to the actual data (with an offset of BUFFER_OFFSET (padding size))
-        unsigned char* get() const;
+        const unsigned char* get() const;
 
         size_t size() const { return buffer_size; }
         size_t padding() const;

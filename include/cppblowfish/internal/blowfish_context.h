@@ -15,8 +15,8 @@ namespace cppblowfish {
 
         BlowfishContext(const BlowfishContext&) = default;
         BlowfishContext& operator=(const BlowfishContext&) = default;
-        BlowfishContext(BlowfishContext&&) = default;
-        BlowfishContext& operator=(BlowfishContext&&) = default;
+        BlowfishContext(BlowfishContext&&) noexcept = default;
+        BlowfishContext& operator=(BlowfishContext&&) noexcept = default;
 
         void initialize(const void* key, size_t size);
         void encrypt(Buffer& input, Buffer& cipher);  // This can modify the input by adding padding

@@ -80,7 +80,7 @@ namespace cppblowfish {
         return *this;
     }
 
-    Buffer::Buffer(Buffer&& other) {
+    Buffer::Buffer(Buffer&& other) noexcept {
         data = other.data;
         capacity = other.capacity;
         buffer_padding = other.buffer_padding;
@@ -90,7 +90,7 @@ namespace cppblowfish {
         other.data = nullptr;
     }
 
-    Buffer& Buffer::operator=(Buffer&& other) {
+    Buffer& Buffer::operator=(Buffer&& other) noexcept {
         delete[] data;
 
         data = other.data;
@@ -162,9 +162,9 @@ namespace cppblowfish {
         return *this;
     }
 
-    unsigned char* Buffer::get() const {
+    const unsigned char* Buffer::get() const {
         if (static_) {
-            return reinterpret_cast<unsigned char*>(const_cast<Buffer*>(this));
+            return reinterpret_cast<const unsigned char*>(this);
         } else {
             return data + BUFFER_OFFSET;
         }
@@ -263,6 +263,7 @@ namespace cppblowfish {
     std::ostream& operator<<(std::ostream& stream, const Buffer& buffer) {
         if (buffer.static_) {
             assert(buffer.buffer_padding == 0);
+
             stream.write(reinterpret_cast<const char*>(&buffer), buffer.buffer_size);
         } else {
             stream.write(

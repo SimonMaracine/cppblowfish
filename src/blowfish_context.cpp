@@ -308,8 +308,8 @@ namespace cppblowfish {
         uint32_t left, right;
 
         for (size_t i = 0; i < len + input.padding(); i += 8) {
-            left = *reinterpret_cast<uint32_t*>(input.get() + i);
-            right = *reinterpret_cast<uint32_t*>(input.get() + i + 4);
+            left = *reinterpret_cast<const uint32_t*>(input.get() + i);
+            right = *reinterpret_cast<const uint32_t*>(input.get() + i + 4);
 
             _encrypt(&left, &right);
 
@@ -330,8 +330,8 @@ namespace cppblowfish {
         uint32_t left, right;
 
         for (size_t i = 0; i < cipher.size(); i += 8) {
-            left = *reinterpret_cast<uint32_t*>(cipher.get() + i);
-            right = *reinterpret_cast<uint32_t*>(cipher.get() + i + 4);
+            left = *reinterpret_cast<const uint32_t*>(cipher.get() + i);
+            right = *reinterpret_cast<const uint32_t*>(cipher.get() + i + 4);
 
             _decrypt(&left, &right);
 
