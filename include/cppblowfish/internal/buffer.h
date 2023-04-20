@@ -2,6 +2,7 @@
 #define _BUFFER_H_
 
 #include <ostream>
+#include <cstdint>
 
 /*
     The buffer is as follows:

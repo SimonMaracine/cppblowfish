@@ -1,5 +1,6 @@
 #include <ostream>
 #include <string>
+#include <cstdint>
 #include <string.h>
 #include <stddef.h>
 #include <assert.h>
