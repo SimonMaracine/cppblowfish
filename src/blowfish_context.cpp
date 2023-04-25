@@ -5,8 +5,17 @@
 
 #include "cppblowfish/internal/blowfish_context.h"
 #include "cppblowfish/internal/errors.h"
+#include "cppblowfish/internal/platform.h"
 
-static const uint32_t P_original[18] = {
+static constexpr size_t MIN_BYTES = 4;  // 32
+static constexpr size_t MAX_BYTES = 56;  // 448
+static const char* KEY_ERROR_MESSAGE = "Key must be between 32 bits and 448 bits (4 and 56 bytes respectively)";
+
+static constexpr size_t P_SIZE = 18;
+static constexpr size_t S_COUNT = 4;
+static constexpr size_t S_SIZE = 256;
+
+static const uint32_t P_original[P_SIZE] = {
     0x243F6A88u, 0x85A308D3u, 0x13198A2Eu,
     0x03707344u, 0xA4093822u, 0x299F31D0u,
     0x082EFA98u, 0xEC4E6C89u, 0x452821E6u,
@@ -15,7 +24,7 @@ static const uint32_t P_original[18] = {
     0xB5470917u, 0x9216D5D9u, 0x8979FB1Bu
 };
 
-static const uint32_t S_original[4][256] = {
+static const uint32_t S_original[S_COUNT][S_SIZE] = {
     { 0xD1310BA6u, 0x98DFB5ACu, 0x2FFD72DBu, 0xD01ADFB7u, 0xB8E1AFEDu,
       0x6A267E96u, 0xBA7C9045u, 0xF12C7F99u, 0x24A19947u, 0xB3916CF7u,
       0x0801F2E2u, 0x858EFC16u, 0x636920D8u, 0x71574E69u, 0xA458FEA3u,
@@ -231,37 +240,39 @@ static const uint32_t S_original[4][256] = {
 
 namespace cppblowfish {
     BlowfishContext::BlowfishContext(const std::string& key) {
-        if (key.size() < 4 || key.size() > 56) {
-            throw KeyError("Key must be between 32 bits and 448 bits (4 and 56 bytes respectively)");
+        if (key.size() < MIN_BYTES || key.size() > MAX_BYTES) {
+            throw KeyError(KEY_ERROR_MESSAGE);
         }
 
         initialize(key.data(), key.size());
     }
 
     BlowfishContext::BlowfishContext(const void* key, size_t size) {
-        if (size < 4 || size > 56) {
-            throw KeyError("Key must be between 32 bits and 448 bits (4 and 56 bytes respectively)");
+        if (size < MIN_BYTES || size > MAX_BYTES) {
+            throw KeyError(KEY_ERROR_MESSAGE);
         }
 
         initialize(key, size);
     }
 
     void BlowfishContext::initialize(const void* key, size_t size) {
+        if (!is_little_endian()) {
+            throw PlatformError("Unsupported platform");
+        }
+
         if (initialized) {
             throw AlreadyInitializedError(
                 "Context has already been initialized; to change the key, create another context"
             );
         }
 
-        memcpy(P_array, P_original, sizeof(uint32_t) * 18);
-        memcpy(S_boxes, S_original, sizeof(uint32_t) * 4 * 256);
+        memcpy(P_array, P_original, sizeof(uint32_t) * P_SIZE);
+        memcpy(S_boxes, S_original, sizeof(uint32_t) * S_COUNT * S_SIZE);
 
-        uint32_t k;
+        for (size_t i = 0, p = 0; i < P_SIZE; i++) {
+            uint32_t k = 0x00;
 
-        for (size_t i = 0, p = 0; i < 18; i++) {
-            k = 0x00;
-
-            for (size_t j = 0; j < 4; j++) {
+            for (size_t j = 0; j < S_COUNT; j++) {
                 k = (k << 8) | static_cast<const uint8_t*>(key)[p];
                 p = (p + 1) % size;
             }
@@ -272,14 +283,14 @@ namespace cppblowfish {
         uint32_t left = 0x00;
         uint32_t right = 0x00;
 
-        for (size_t i = 0; i < 18; i += 2) {
+        for (size_t i = 0; i < P_SIZE; i += 2) {
             _encrypt(&left, &right);
             P_array[i] = left;
             P_array[i + 1] = right;
         }
 
-        for (size_t i = 0; i < 4; i++) {
-            for (size_t j = 0; j < 256; j += 2) {
+        for (size_t i = 0; i < S_COUNT; i++) {
+            for (size_t j = 0; j < S_SIZE; j += 2) {
                 _encrypt(&left, &right);
                 S_boxes[i][j] = left;
                 S_boxes[i][j + 1] = right;
@@ -294,11 +305,11 @@ namespace cppblowfish {
 
         const size_t len = input.size();
         const size_t padding = (
-            len > 4 * 2
+            len > S_COUNT * 2
             ?
-            ((len / (4 * 2)) + 1) * 4 * 2 - len
+            ((len / (S_COUNT * 2)) + 1) * S_COUNT * 2 - len
             :
-            4 * 2 - len
+            S_COUNT * 2 - len
         );
 
         input.padd(padding, '\0');
@@ -309,7 +320,7 @@ namespace cppblowfish {
 
         for (size_t i = 0; i < len + input.padding(); i += 8) {
             left = *reinterpret_cast<const uint32_t*>(input.get() + i);
-            right = *reinterpret_cast<const uint32_t*>(input.get() + i + 4);
+            right = *reinterpret_cast<const uint32_t*>(input.get() + i + sizeof(uint32_t));
 
             _encrypt(&left, &right);
 
@@ -331,7 +342,7 @@ namespace cppblowfish {
 
         for (size_t i = 0; i < cipher.size(); i += 8) {
             left = *reinterpret_cast<const uint32_t*>(cipher.get() + i);
-            right = *reinterpret_cast<const uint32_t*>(cipher.get() + i + 4);
+            right = *reinterpret_cast<const uint32_t*>(cipher.get() + i + sizeof(uint32_t));
 
             _decrypt(&left, &right);
 

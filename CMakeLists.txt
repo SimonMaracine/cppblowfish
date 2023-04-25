@@ -6,7 +6,7 @@ set(TEST "test")
 option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside library" ON)
 
 project(cppblowfish
-    VERSION 0.2.0
+    VERSION 0.3.0
     LANGUAGES CXX
 )
 

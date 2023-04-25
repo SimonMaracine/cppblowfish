@@ -27,6 +27,14 @@ namespace cppblowfish {
         KeyError(const char* message)
             : std::logic_error(message) {}
     };
+
+    class PlatformError : public std::runtime_error {
+    public:
+        PlatformError(const std::string& message)
+            : std::runtime_error(message) {}
+        PlatformError(const char* message)
+            : std::runtime_error(message) {}
+    };
 }
 
 #endif  // _ERRORS_H_

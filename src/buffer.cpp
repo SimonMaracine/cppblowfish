@@ -1,9 +1,9 @@
 #include <ostream>
 #include <string>
 #include <cstdint>
+#include <cassert>
 #include <string.h>
 #include <stddef.h>
-#include <assert.h>
 
 #include "cppblowfish/internal/buffer.h"
 #include "cppblowfish/internal/errors.h"

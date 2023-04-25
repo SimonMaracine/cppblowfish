@@ -2,6 +2,7 @@
 #define _BLOWFISH_CONTEXT_H_
 
 #include <string>
+#include <cstdint>
 
 #include "buffer.h"
 
