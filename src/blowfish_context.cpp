@@ -14,6 +14,8 @@ static const char* KEY_ERROR_MESSAGE = "Key must be between 32 bits and 448 bits
 static constexpr size_t P_SIZE = 18;
 static constexpr size_t S_COUNT = 4;
 static constexpr size_t S_SIZE = 256;
+static constexpr size_t BLOCK = sizeof(uint64_t);
+static constexpr size_t HALF_BLOCK = BLOCK / 2;
 
 static const uint32_t P_original[P_SIZE] = {
     0x243F6A88u, 0x85A308D3u, 0x13198A2Eu,
@@ -303,24 +305,24 @@ namespace cppblowfish {
     void BlowfishContext::encrypt(Buffer& input, Buffer& cipher) {
         Buffer result;
 
-        const size_t len = input.size();
+        const size_t size = input.size();
         const size_t padding = (
-            len > S_COUNT * 2
+            size > S_COUNT * 2
             ?
-            ((len / (S_COUNT * 2)) + 1) * S_COUNT * 2 - len
+            ((size / (S_COUNT * 2)) + 1) * S_COUNT * 2 - size
             :
-            S_COUNT * 2 - len
+            S_COUNT * 2 - size
         );
 
         input.padd(padding, '\0');
 
-        result.reserve(len + padding);
+        result.reserve(size + padding);
 
         uint32_t left, right;
 
-        for (size_t i = 0; i < len + input.padding(); i += 8) {
-            left = *reinterpret_cast<const uint32_t*>(input.get() + i);
-            right = *reinterpret_cast<const uint32_t*>(input.get() + i + sizeof(uint32_t));
+        for (size_t i = 0; i < size + input.padding(); i += BLOCK) {
+            memcpy(&left, input.get() + i, sizeof(uint32_t));
+            memcpy(&right, input.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
             _encrypt(&left, &right);
 
@@ -340,9 +342,9 @@ namespace cppblowfish {
 
         uint32_t left, right;
 
-        for (size_t i = 0; i < cipher.size(); i += 8) {
-            left = *reinterpret_cast<const uint32_t*>(cipher.get() + i);
-            right = *reinterpret_cast<const uint32_t*>(cipher.get() + i + sizeof(uint32_t));
+        for (size_t i = 0; i < cipher.size(); i += BLOCK) {
+            memcpy(&left, cipher.get() + i, sizeof(uint32_t));
+            memcpy(&right, cipher.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
             _decrypt(&left, &right);
 

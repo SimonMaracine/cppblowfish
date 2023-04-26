@@ -5,7 +5,7 @@ set(TEST "test")
 
 option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside library" ON)
 
-project(cppblowfish
+project("cppblowfish"
     VERSION 0.3.0
     LANGUAGES CXX
 )
@@ -14,6 +14,7 @@ set(HEADERS
     "include/cppblowfish/internal/blowfish_context.h"
     "include/cppblowfish/internal/buffer.h"
     "include/cppblowfish/internal/errors.h"
+    "include/cppblowfish/internal/platform.h"
     "include/cppblowfish/cppblowfish.h"
 )
 

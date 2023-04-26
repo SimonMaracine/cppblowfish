@@ -10,6 +10,8 @@
 
 #define MAX_STATIC_SIZE offsetof(Buffer, static_)
 
+// FIXME Buffer is not a trivially copyable type and passing it to memcpy might not actually be well-defined
+
 namespace cppblowfish {
     Buffer::Buffer(Staticity static_)
         : static_(static_) {
@@ -29,9 +31,8 @@ namespace cppblowfish {
                 );
             }
 
-            unsigned char* self = reinterpret_cast<unsigned char*>(this);
-
-            memcpy(self, data, size);
+            // Write directly to this; should be safe
+            memcpy(this, data, size);
         } else {
             this->data = new unsigned char[size + BUFFER_OFFSET];
 
@@ -113,9 +114,9 @@ namespace cppblowfish {
                 );
             }
 
+            // Should be safe
             unsigned char* self = reinterpret_cast<unsigned char*>(this);
-
-            self[buffer_size] = character;
+            memcpy(self + buffer_size, &character, sizeof(unsigned char));
             buffer_size++;
         } else {
             if (buffer_size + 1 + BUFFER_OFFSET > capacity) {
@@ -137,6 +138,7 @@ namespace cppblowfish {
                 );
             }
 
+            // Should be safe
             unsigned char* self = reinterpret_cast<unsigned char*>(this);
 
             if (other.static_) {
@@ -165,7 +167,7 @@ namespace cppblowfish {
 
     const unsigned char* Buffer::get() const {
         if (static_) {
-            return reinterpret_cast<const unsigned char*>(this);
+            return reinterpret_cast<const unsigned char*>(this);  // Should be used carefully
         } else {
             return data + BUFFER_OFFSET;
         }
@@ -208,7 +210,7 @@ namespace cppblowfish {
 
         buffer.buffer_size = whole_size - BUFFER_OFFSET;
         buffer.capacity = whole_size;
-        buffer.buffer_padding = *reinterpret_cast<size_t*>(const_cast<void*>(whole_data));
+        memcpy(&buffer.buffer_padding, whole_data, sizeof(size_t));
 
         return buffer;
     }
@@ -216,18 +218,20 @@ namespace cppblowfish {
     void Buffer::write_whole_data(std::ostream& stream) const {
         if (static_) {
             assert(buffer_padding == 0);
-            stream.write(reinterpret_cast<const char*>(this), buffer_size);
+
+            Buffer::write_to_stream(stream, buffer_size, this);
         } else {
-            stream.write(reinterpret_cast<const char*>(data), buffer_size + BUFFER_OFFSET);
+            Buffer::write_to_stream(stream, buffer_size + BUFFER_OFFSET, data);
         }
     }
 
     void Buffer::write_whole_data(unsigned char* out) const {
         if (static_) {
             assert(buffer_padding == 0);
-            memcpy(out, reinterpret_cast<unsigned char*>(const_cast<Buffer*>(this)), buffer_size);
+
+            memcpy(out, this, buffer_size);
         } else {
-            memcpy(out, reinterpret_cast<const char*>(data), buffer_size + BUFFER_OFFSET);
+            memcpy(out, data, buffer_size + BUFFER_OFFSET);
         }
     }
 
@@ -236,7 +240,7 @@ namespace cppblowfish {
     }
 
     void Buffer::padd(size_t padd_count, unsigned char character) {
-        assert(!static_ && "Buffer::padd not available for static buffer");  // TODO maybe use exceptions instead
+        assert(!static_ && "Buffer::padd not available for static buffer");
 
         if (buffer_size + padd_count + BUFFER_OFFSET > capacity) {
             reserve(buffer_size + padd_count + BUFFER_OFFSET);
@@ -261,16 +265,22 @@ namespace cppblowfish {
         return buffer;
     }
 
+    void Buffer::write_to_stream(std::ostream& stream, size_t size, const void* data) {
+        char* write_buffer = new char[size];
+        memcpy(write_buffer, data, size);
+
+        stream.write(write_buffer, size);
+
+        delete[] write_buffer;
+    }
+
     std::ostream& operator<<(std::ostream& stream, const Buffer& buffer) {
         if (buffer.static_) {
             assert(buffer.buffer_padding == 0);
 
-            stream.write(reinterpret_cast<const char*>(&buffer), buffer.buffer_size);
+            Buffer::write_to_stream(stream, buffer.buffer_size, &buffer);
         } else {
-            stream.write(
-                reinterpret_cast<const char*>(buffer.data + BUFFER_OFFSET),
-                buffer.buffer_size - buffer.buffer_padding
-            );
+            Buffer::write_to_stream(stream, buffer.buffer_size - buffer.buffer_padding, buffer.data + BUFFER_OFFSET);
         }
 
         return stream;

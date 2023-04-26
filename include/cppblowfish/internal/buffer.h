@@ -46,6 +46,7 @@ namespace cppblowfish {
         Buffer& operator+=(const Buffer& other);
 
         // Pointer to the actual data (with an offset of BUFFER_OFFSET (padding size))
+        // Be aware that a static buffer returns a pointer to itself as another type; don't violate the strict aliasing rule
         const unsigned char* get() const;
 
         size_t size() const { return buffer_size; }
@@ -66,6 +67,7 @@ namespace cppblowfish {
     private:
         void padd(size_t padd_count, unsigned char character);
         static Buffer from_uint32(uint32_t x);
+        static void write_to_stream(std::ostream& stream, size_t size, const void* data);
 
         // The order of the members matters
         unsigned char* data = nullptr;
