@@ -17,7 +17,7 @@
             ^        ^                  ^          ^
             0        1                  2          3
 
-    0. This is padding size, a size_t representing the amount of padding that is at the end (the number of trailing bytes).
+    0. The padding size, a size_t representing the amount of padding that is at the end (number of trailing bytes).
     1. The actual data, variable amount.
     2. The padding bytes, variable amount. buffer_padding and the first 8 bytes of the buffer represent this amount.
     3. Allocated, but unused memory.

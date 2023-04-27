@@ -2,8 +2,8 @@
 #include <string>
 #include <cstdint>
 #include <cassert>
-#include <string.h>
-#include <stddef.h>
+#include <cstring>
+#include <cstddef>
 
 #include "cppblowfish/internal/buffer.h"
 #include "cppblowfish/internal/errors.h"

@@ -22,9 +22,11 @@ namespace cppblowfish {
         void initialize(const void* key, size_t size);
         void encrypt(Buffer& input, Buffer& cipher);  // This can modify the input by adding padding
         void decrypt(const Buffer& cipher, Buffer& output);
+
+        // Low level API
+        void encrypt_data(uint32_t* left, uint32_t* right);
+        void decrypt_data(uint32_t* left, uint32_t* right);
     private:
-        void _encrypt(uint32_t* left, uint32_t* right);
-        void _decrypt(uint32_t* left, uint32_t* right);
         uint32_t f(uint32_t x);
 
         uint32_t P_array[18];

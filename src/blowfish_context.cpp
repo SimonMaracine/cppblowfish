@@ -1,7 +1,7 @@
 #include <string>
 #include <algorithm>
 #include <utility>
-#include <string.h>
+#include <cstring>
 
 #include "cppblowfish/internal/blowfish_context.h"
 #include "cppblowfish/internal/errors.h"
@@ -286,14 +286,14 @@ namespace cppblowfish {
         uint32_t right = 0x00;
 
         for (size_t i = 0; i < P_SIZE; i += 2) {
-            _encrypt(&left, &right);
+            encrypt_data(&left, &right);
             P_array[i] = left;
             P_array[i + 1] = right;
         }
 
         for (size_t i = 0; i < S_COUNT; i++) {
             for (size_t j = 0; j < S_SIZE; j += 2) {
-                _encrypt(&left, &right);
+                encrypt_data(&left, &right);
                 S_boxes[i][j] = left;
                 S_boxes[i][j + 1] = right;
             }
@@ -324,14 +324,14 @@ namespace cppblowfish {
             memcpy(&left, input.get() + i, sizeof(uint32_t));
             memcpy(&right, input.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
-            _encrypt(&left, &right);
+            encrypt_data(&left, &right);
 
             result += Buffer::from_uint32(left);
             result += Buffer::from_uint32(right);
         }
 
         result.buffer_padding = input.buffer_padding;
-        memcpy(result.data, &input.buffer_padding, sizeof(input.buffer_padding));
+        memcpy(result.data, &input.buffer_padding, sizeof(size_t));
 
         cipher = std::move(result);
     }
@@ -346,19 +346,19 @@ namespace cppblowfish {
             memcpy(&left, cipher.get() + i, sizeof(uint32_t));
             memcpy(&right, cipher.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
-            _decrypt(&left, &right);
+            decrypt_data(&left, &right);
 
             result += Buffer::from_uint32(left);
             result += Buffer::from_uint32(right);
         }
 
         result.buffer_padding = cipher.buffer_padding;
-        memcpy(result.data, &cipher.buffer_padding, sizeof(cipher.buffer_padding));
+        memcpy(result.data, &cipher.buffer_padding, sizeof(size_t));
 
         output = std::move(result);
     }
 
-    void BlowfishContext::_encrypt(uint32_t* left, uint32_t* right) {
+    void BlowfishContext::encrypt_data(uint32_t* left, uint32_t* right) {
         for (size_t r = 0; r < 16; r++) {
             *left = *left ^ P_array[r];
             *right = f(*left) ^ *right;
@@ -370,7 +370,7 @@ namespace cppblowfish {
         *left = *left ^ P_array[17];
     }
 
-    void BlowfishContext::_decrypt(uint32_t* left, uint32_t* right) {
+    void BlowfishContext::decrypt_data(uint32_t* left, uint32_t* right) {
         for (size_t r = 17; r > 1; r--) {
             *left = *left ^ P_array[r];
             *right = f(*left) ^ *right;
