@@ -23,8 +23,12 @@ DEFINE_TEST(basic_usage)
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
 
+    ASSERT_EQ(input.size(), 30)
+    ASSERT_EQ(input.padding(), 0)
+
     blowfish.encrypt(input, cipher);
 
+    ASSERT_EQ(input.size(), 30)
     ASSERT_EQ(input.padding(), 2)
 
     ASSERT_EQ(cipher.get()[0], 0x5D)
@@ -37,7 +41,7 @@ DEFINE_TEST(basic_usage)
     ASSERT_EQ(cipher.get()[13], 0x25)
     ASSERT_EQ(cipher.get()[29], 0xE7)
 
-    ASSERT_EQ(cipher.size(), 32)
+    ASSERT_EQ(cipher.size(), 30)
     ASSERT_EQ(cipher.padding(), 2)
 
     blowfish.decrypt(cipher, output);
@@ -55,10 +59,10 @@ DEFINE_TEST(basic_usage)
     ASSERT_EQ(output.get()[27], 'a')
     ASSERT_EQ(output.get()[29], '?')
 
-    ASSERT_EQ(output.size(), 32)
+    ASSERT_EQ(output.size(), 30)
     ASSERT_EQ(output.padding(), 2)
 
-    ASSERT_EQ(output.size() - output.padding(), message.size())
+    ASSERT_EQ(output.size(), message.size())
 END_DEFINE_TEST()
 
 DEFINE_TEST(writing_cipher_to_file)
@@ -71,8 +75,12 @@ DEFINE_TEST(writing_cipher_to_file)
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
 
+    ASSERT_EQ(input.size(), 96)
+    ASSERT_EQ(input.padding(), 0)
+
     blowfish.encrypt(input, cipher);
 
+    ASSERT_EQ(input.size(), 96)
     ASSERT_EQ(input.padding(), 8)
 
     ASSERT_EQ(cipher.get()[0], 0x25)
@@ -84,7 +92,7 @@ DEFINE_TEST(writing_cipher_to_file)
     ASSERT_EQ(cipher.get()[94], 0x74)
     ASSERT_EQ(cipher.get()[95], 0xD1)
 
-    ASSERT_EQ(cipher.size(), 104)
+    ASSERT_EQ(cipher.size(), 96)
     ASSERT_EQ(cipher.padding(), 8)
 
     {
@@ -118,10 +126,10 @@ DEFINE_TEST(writing_cipher_to_file)
     ASSERT_EQ(output.get()[94], 's')
     ASSERT_EQ(output.get()[95], '.')
 
-    ASSERT_EQ(output.size(), 104)
+    ASSERT_EQ(output.size(), 96)
     ASSERT_EQ(output.padding(), 8)
 
-    ASSERT_EQ(output.size() - output.padding(), message.size())
+    ASSERT_EQ(output.size(), message.size())
 END_DEFINE_TEST()
 
 DEFINE_TEST(buffer)
@@ -156,16 +164,18 @@ int main() {
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
 
-    std::cout << "input: " << input << std::endl;
-    std::cout << "input size: " << input.size() << std::endl;
+    std::cout << "input: " << input << '\n';
+    std::cout << "input size: " << input.size() << '\n';
 
     blowfish.encrypt(input, cipher);
 
-    std::cout << "cipher: " << cipher << std::endl;
-    std::cout << "cipher size: " << cipher.size() << std::endl;
+    std::cout << "cipher: " << cipher << '\n';
+    std::cout << "cipher size: " << cipher.size() << '\n';
 
     blowfish.decrypt(cipher, output);
 
-    std::cout << "output: " << output << std::endl;
-    std::cout << "output size: " << output.size() << std::endl;
+    std::cout << "output: " << output << '\n';
+    std::cout << "output size: " << output.size() << '\n';
+    std::cout << "input, cipher, output padding: " << input.padding() << ", " << cipher.padding()
+            << ", " << output.padding() << '\n';
 }

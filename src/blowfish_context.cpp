@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "cppblowfish/internal/blowfish_context.h"
+#include "cppblowfish/internal/buffer.h"
 #include "cppblowfish/internal/errors.h"
 #include "cppblowfish/internal/platform.h"
 
@@ -320,7 +321,7 @@ namespace cppblowfish {
 
         uint32_t left, right;
 
-        for (size_t i = 0; i < size + input.padding(); i += BLOCK) {
+        for (size_t i = 0; i < input.size() + input.padding(); i += BLOCK) {
             memcpy(&left, input.get() + i, sizeof(uint32_t));
             memcpy(&right, input.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
@@ -338,11 +339,11 @@ namespace cppblowfish {
 
     void BlowfishContext::decrypt(const Buffer& cipher, Buffer& output) {
         Buffer result;
-        result.reserve(cipher.size());
+        result.reserve(cipher.size() + cipher.padding());
 
         uint32_t left, right;
 
-        for (size_t i = 0; i < cipher.size(); i += BLOCK) {
+        for (size_t i = 0; i < cipher.size() + cipher.padding(); i += BLOCK) {
             memcpy(&left, cipher.get() + i, sizeof(uint32_t));
             memcpy(&right, cipher.get() + i + HALF_BLOCK, sizeof(uint32_t));
 

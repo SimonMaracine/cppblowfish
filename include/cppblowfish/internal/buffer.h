@@ -50,28 +50,29 @@ namespace cppblowfish {
         // Pointer to the actual data (with an offset of BUFFER_OFFSET (padding size))
         const unsigned char* get() const;
 
-        size_t size() const { return buffer_size; }
+        // Actual data size
+        size_t size() const { return buffer_size - buffer_padding; }
+
         size_t padding() const { return buffer_padding; }
-        // The size of the actual data (without padding) is size() - padding()
 
         void reserve(size_t capacity);
 
-        // Create new buffer from previous buffer's whole data
+        // Create a new buffer from a previous buffer's whole data
         static Buffer from_whole_data(const void* whole_data, size_t whole_size);
 
-        // Writes all the data (data + padding + padding size)
+        // Writes all the data (padding size + data + padding)
         void write_whole_data(std::ostream& stream) const;
         void write_whole_data(unsigned char* out) const;  // out is a pointer to a buffer allocated by you
-                                                          // and should have the size as size() + BUFFER_OFFSET
+                                                          // and should have the size as size() + padding() + BUFFER_OFFSET
     private:
         void padd(size_t padd_count, unsigned char character);
         static void write_to_stream(std::ostream& stream, size_t size, const void* data);
 
         unsigned char* data = nullptr;
-        size_t capacity = 0;  // The number of bytes allocated (buffer size + padding size + unused bytes)
-        size_t buffer_padding = 0;  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
 
-        size_t buffer_size = 0;  // The size in bytes of the actual data + actual padding
+        size_t capacity = 0;  // The number of bytes allocated (padding size + buffer size + unused bytes)
+        size_t buffer_padding = 0;  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
+        size_t buffer_size = 0;  // The size in bytes of the actual data + the actual padding
 
         friend class BlowfishContext;
         friend std::ostream& operator<<(std::ostream& stream, const Buffer& buffer);
