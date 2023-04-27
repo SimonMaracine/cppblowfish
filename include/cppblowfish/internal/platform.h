@@ -1,4 +1,4 @@
-// Should be included only in blowfish_context
+// Should be included only in blowfish_context.cpp
 
 #ifndef _PLATFORM_H_
 #define _PLATFORM_H_

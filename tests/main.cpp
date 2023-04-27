@@ -1,8 +1,9 @@
 /*
-    I know that these teste are not as rigorous as they could be and
+    I know that these tests are not as rigorous as they could be and
     they don't really test all the functionality of the library.
     But still it looks okay to me. I'm just lazy about it.
 */
+
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -132,50 +133,11 @@ DEFINE_TEST(buffer)
     ASSERT_EQ(buffer.size(), size)
     ASSERT_EQ(buffer.padding(), 0)
 
-    buffer += 'x';
+    buffer += cppblowfish::internal::repr_uint32('x');
 
     ASSERT_EQ(buffer.get()[4], 'x')
-    ASSERT_EQ(buffer.size(), size + 1)
+    ASSERT_EQ(buffer.size(), size + 4)
     ASSERT_EQ(buffer.padding(), 0)
-
-    constexpr size_t size2 = 9;
-    char data2[size2] = { ' ', 'i', 's', ' ', 'g', 'r', 'e', 'a', 't' };
-    cppblowfish::Buffer buffer2 {data2, size2};
-    buffer += buffer2;
-
-    ASSERT_EQ(memcmp(buffer.get(), data, size), 0)
-    ASSERT_EQ(buffer.get()[5], ' ')
-    ASSERT_EQ(buffer.get()[6], 'i')
-    ASSERT_EQ(buffer.get()[7], 's')
-    ASSERT_EQ(buffer.get()[12], 'a')
-    ASSERT_EQ(buffer.get()[13], 't')
-    ASSERT_EQ(buffer.size(), size + 1 + size2)
-    ASSERT_EQ(buffer.padding(), 0)
-END_DEFINE_TEST()
-
-DEFINE_TEST(buffer_static)
-    {
-        cppblowfish::Buffer buffer {cppblowfish::Static};
-
-        buffer += 'G';
-        buffer += 'o';
-        buffer += 'o';
-        buffer += 'd';
-        buffer += '?';
-
-        char data[] = { 'G', 'o', 'o', 'd', '?' };
-        ASSERT_EQ(memcmp(buffer.get(), data, 5), 0)
-        ASSERT_EQ(buffer.size(), 5)
-    }
-
-    {
-        const char* data = "Hello, world! What's up? I haven't seen you since yesterday.";
-
-        try {
-            cppblowfish::Buffer buffer {data, strlen(data), cppblowfish::Static};
-            ASSERT(false)
-        } catch (cppblowfish::AllocationError& e) {}
-    }
 END_DEFINE_TEST()
 
 int main() {
@@ -183,7 +145,6 @@ int main() {
     TEST(basic_usage)
     TEST(writing_cipher_to_file)
     TEST(buffer)
-    TEST(buffer_static)
     END_UNIT_TEST()
 
     std::string key = "mySECRETkey1234";
@@ -194,6 +155,9 @@ int main() {
     cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;
     cppblowfish::Buffer output;
+
+    std::cout << "input: " << input << std::endl;
+    std::cout << "input size: " << input.size() << std::endl;
 
     blowfish.encrypt(input, cipher);
 

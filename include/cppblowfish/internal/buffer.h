@@ -26,15 +26,18 @@
 namespace cppblowfish {
     inline constexpr size_t BUFFER_OFFSET = sizeof(size_t);
 
-    enum Staticity {
-        NonStatic = 0,
-        Static = 1
-    };
+    namespace internal {
+        struct Uint32 {
+            unsigned char data[4];
+        };
+
+        Uint32 repr_uint32(uint32_t x);
+    }
 
     class Buffer {
     public:
-        Buffer(Staticity static_ = NonStatic);
-        Buffer(const void* data, size_t size, Staticity static_ = NonStatic);
+        Buffer();
+        Buffer(const void* data, size_t size);  // data can be null
         ~Buffer();
 
         Buffer(const Buffer& other);
@@ -42,15 +45,13 @@ namespace cppblowfish {
         Buffer(Buffer&& other) noexcept;
         Buffer& operator=(Buffer&& other) noexcept;
 
-        Buffer& operator+=(unsigned char character);
-        Buffer& operator+=(const Buffer& other);
+        Buffer& operator+=(const internal::Uint32& uint32);
 
         // Pointer to the actual data (with an offset of BUFFER_OFFSET (padding size))
-        // Be aware that a static buffer returns a pointer to itself as another type; don't violate the strict aliasing rule
         const unsigned char* get() const;
 
         size_t size() const { return buffer_size; }
-        size_t padding() const;
+        size_t padding() const { return buffer_padding; }
         // The size of the actual data (without padding) is size() - padding()
 
         void reserve(size_t capacity);
@@ -62,19 +63,14 @@ namespace cppblowfish {
         void write_whole_data(std::ostream& stream) const;
         void write_whole_data(unsigned char* out) const;  // out is a pointer to a buffer allocated by you
                                                           // and should have the size as size() + BUFFER_OFFSET
-
-        static constexpr size_t max_static_size();
     private:
         void padd(size_t padd_count, unsigned char character);
-        static Buffer from_uint32(uint32_t x);
         static void write_to_stream(std::ostream& stream, size_t size, const void* data);
 
-        // The order of the members matters
         unsigned char* data = nullptr;
-        size_t capacity = 0;  // The number of bytes allocated (buffer_size + padding size + unused bytes)
-        size_t buffer_padding = 0;  // The size in bytes of the actual padding (it is also stored at the beginning of the buffer)
+        size_t capacity = 0;  // The number of bytes allocated (buffer size + padding size + unused bytes)
+        size_t buffer_padding = 0;  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
 
-        Staticity static_ = NonStatic;
         size_t buffer_size = 0;  // The size in bytes of the actual data + actual padding
 
         friend class BlowfishContext;

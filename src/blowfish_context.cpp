@@ -326,12 +326,12 @@ namespace cppblowfish {
 
             encrypt_data(&left, &right);
 
-            result += Buffer::from_uint32(left);
-            result += Buffer::from_uint32(right);
+            result += internal::repr_uint32(left);
+            result += internal::repr_uint32(right);
         }
 
-        result.buffer_padding = input.buffer_padding;
         memcpy(result.data, &input.buffer_padding, sizeof(size_t));
+        result.buffer_padding = input.buffer_padding;
 
         cipher = std::move(result);
     }
@@ -348,12 +348,12 @@ namespace cppblowfish {
 
             decrypt_data(&left, &right);
 
-            result += Buffer::from_uint32(left);
-            result += Buffer::from_uint32(right);
+            result += internal::repr_uint32(left);
+            result += internal::repr_uint32(right);
         }
 
-        result.buffer_padding = cipher.buffer_padding;
         memcpy(result.data, &cipher.buffer_padding, sizeof(size_t));
+        result.buffer_padding = cipher.buffer_padding;
 
         output = std::move(result);
     }
