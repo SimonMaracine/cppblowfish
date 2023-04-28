@@ -20,7 +20,7 @@ namespace cppblowfish {
         BlowfishContext& operator=(BlowfishContext&&) noexcept = default;
 
         void initialize(const void* key, size_t size);
-        void encrypt(Buffer& input, Buffer& cipher);  // This can modify the input by adding padding
+        void encrypt(const Buffer& input, Buffer& cipher);
         void decrypt(const Buffer& cipher, Buffer& output);
 
         // Low level API

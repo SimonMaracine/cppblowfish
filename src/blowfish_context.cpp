@@ -303,7 +303,7 @@ namespace cppblowfish {
         initialized = true;
     }
 
-    void BlowfishContext::encrypt(Buffer& input, Buffer& cipher) {
+    void BlowfishContext::encrypt(const Buffer& input, Buffer& cipher) {
         Buffer result;
 
         const size_t size = input.size();
@@ -315,15 +315,16 @@ namespace cppblowfish {
             S_COUNT * 2 - size
         );
 
-        input.padd(padding, '\0');
+        Buffer input_padded = input;
+        input_padded.padd(padding, '\0');
 
         result.reserve(size + padding);
 
         uint32_t left, right;
 
-        for (size_t i = 0; i < input.size() + input.padding(); i += BLOCK) {
-            memcpy(&left, input.get() + i, sizeof(uint32_t));
-            memcpy(&right, input.get() + i + HALF_BLOCK, sizeof(uint32_t));
+        for (size_t i = 0; i < input_padded.size() + input_padded.padding(); i += BLOCK) {
+            memcpy(&left, input_padded.get() + i, sizeof(uint32_t));
+            memcpy(&right, input_padded.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
             encrypt_data(&left, &right);
 
@@ -331,8 +332,8 @@ namespace cppblowfish {
             result += internal::repr_uint32(right);
         }
 
-        memcpy(result.data, &input.buffer_padding, sizeof(size_t));
-        result.buffer_padding = input.buffer_padding;
+        memcpy(result.data, &input_padded.buffer_padding, sizeof(size_t));
+        result.buffer_padding = input_padded.buffer_padding;
 
         cipher = std::move(result);
     }

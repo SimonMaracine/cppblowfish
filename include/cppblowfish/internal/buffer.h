@@ -9,7 +9,7 @@
 
             _________________________________________________------ capacity
             |                                               |
-            |        _____________________________----------------- buffer_size
+            |        _____________________________----------------- buffer_data_padding
             |        |                           |          |
             |        |                  __________----------------- buffer_padding
             |        |                  |        |          |
@@ -24,7 +24,7 @@
 */
 
 namespace cppblowfish {
-    inline constexpr size_t BUFFER_OFFSET = sizeof(size_t);
+    inline constexpr size_t BUFFER_OFFSET = sizeof(size_t);  // Padding size
 
     namespace internal {
         struct Uint32 {
@@ -47,11 +47,11 @@ namespace cppblowfish {
 
         Buffer& operator+=(const internal::Uint32& uint32);
 
-        // Pointer to the actual data (with an offset of BUFFER_OFFSET (padding size))
+        // Pointer to the actual data (with an offset of BUFFER_OFFSET)
         const unsigned char* get() const;
 
         // Actual data size
-        size_t size() const { return buffer_size - buffer_padding; }
+        size_t size() const { return buffer_data_padding - buffer_padding; }
 
         size_t padding() const { return buffer_padding; }
 
@@ -60,7 +60,7 @@ namespace cppblowfish {
         // Create a new buffer from a previous buffer's whole data
         static Buffer from_whole_data(const void* whole_data, size_t whole_size);
 
-        // Writes all the data (padding size + data + padding)
+        // Writes all the data (padding size + data + padding); not the additional allocated memory
         void write_whole_data(std::ostream& stream) const;
         void write_whole_data(unsigned char* out) const;  // out is a pointer to a buffer allocated by you
                                                           // and should have the size as size() + padding() + BUFFER_OFFSET
@@ -70,9 +70,9 @@ namespace cppblowfish {
 
         unsigned char* data = nullptr;
 
-        size_t capacity = 0;  // The number of bytes allocated (padding size + buffer size + unused bytes)
+        size_t capacity = 0;  // The number of bytes allocated (padding size + buffer data padding + unused bytes)
         size_t buffer_padding = 0;  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
-        size_t buffer_size = 0;  // The size in bytes of the actual data + the actual padding
+        size_t buffer_data_padding = 0;  // The size in bytes of the actual data + the actual padding
 
         friend class BlowfishContext;
         friend std::ostream& operator<<(std::ostream& stream, const Buffer& buffer);

@@ -29,7 +29,7 @@ DEFINE_TEST(basic_usage)
     blowfish.encrypt(input, cipher);
 
     ASSERT_EQ(input.size(), 30)
-    ASSERT_EQ(input.padding(), 2)
+    ASSERT_EQ(input.padding(), 0)
 
     ASSERT_EQ(cipher.get()[0], 0x5D)
     ASSERT_EQ(cipher.get()[1], 0x77)
@@ -81,7 +81,7 @@ DEFINE_TEST(writing_cipher_to_file)
     blowfish.encrypt(input, cipher);
 
     ASSERT_EQ(input.size(), 96)
-    ASSERT_EQ(input.padding(), 8)
+    ASSERT_EQ(input.padding(), 0)
 
     ASSERT_EQ(cipher.get()[0], 0x25)
     ASSERT_EQ(cipher.get()[1], 0xB7)

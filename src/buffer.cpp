@@ -37,7 +37,7 @@ namespace cppblowfish {
         memset(this->data, 0, BUFFER_OFFSET);
 
         capacity = size + BUFFER_OFFSET;
-        buffer_size = size;
+        buffer_data_padding = size;
     }
 
     Buffer::~Buffer() {
@@ -48,10 +48,10 @@ namespace cppblowfish {
         data = other.data;
         capacity = other.capacity;
         buffer_padding = other.buffer_padding;
-        buffer_size = other.buffer_size;
+        buffer_data_padding = other.buffer_data_padding;
 
         data = new unsigned char[other.capacity];
-        memcpy(data, other.data, other.buffer_size + other.buffer_padding);
+        memcpy(data, other.data, other.buffer_data_padding + BUFFER_OFFSET);
     }
 
     Buffer& Buffer::operator=(const Buffer& other) {
@@ -60,10 +60,10 @@ namespace cppblowfish {
         data = other.data;
         capacity = other.capacity;
         buffer_padding = other.buffer_padding;
-        buffer_size = other.buffer_size;
+        buffer_data_padding = other.buffer_data_padding;
 
         data = new unsigned char[other.capacity];
-        memcpy(data, other.data, other.buffer_size + other.buffer_padding);
+        memcpy(data, other.data, other.buffer_data_padding + BUFFER_OFFSET);
 
         return *this;
     }
@@ -72,7 +72,7 @@ namespace cppblowfish {
         data = other.data;
         capacity = other.capacity;
         buffer_padding = other.buffer_padding;
-        buffer_size = other.buffer_size;
+        buffer_data_padding = other.buffer_data_padding;
 
         other.data = nullptr;
     }
@@ -83,7 +83,7 @@ namespace cppblowfish {
         data = other.data;
         capacity = other.capacity;
         buffer_padding = other.buffer_padding;
-        buffer_size = other.buffer_size;
+        buffer_data_padding = other.buffer_data_padding;
 
         other.data = nullptr;
 
@@ -93,13 +93,13 @@ namespace cppblowfish {
     Buffer& Buffer::operator+=(const internal::Uint32& uint32) {
         constexpr size_t additional = sizeof(internal::Uint32);
 
-        if (buffer_size + BUFFER_OFFSET + additional > capacity) {
-            reserve(buffer_size + BUFFER_OFFSET + additional);
+        if (buffer_data_padding + BUFFER_OFFSET + additional > capacity) {
+            reserve(buffer_data_padding + BUFFER_OFFSET + additional);
         }
 
-        memcpy(data + buffer_size + BUFFER_OFFSET, &uint32, additional);  // Uint32 is trivially copyable
+        memcpy(data + buffer_data_padding + BUFFER_OFFSET, &uint32, additional);  // Uint32 is trivially copyable
 
-        buffer_size += additional;
+        buffer_data_padding += additional;
 
         return *this;
     }
@@ -109,14 +109,14 @@ namespace cppblowfish {
     }
 
     void Buffer::reserve(size_t capacity) {
-        if (capacity < buffer_size) {
+        if (capacity < buffer_data_padding) {
             throw AllocationError("The new capacity is smaller than the current buffer size");
         }
 
         unsigned char* new_data = new unsigned char[capacity];
 
         if (data != nullptr) {
-            memcpy(new_data, data, buffer_size + BUFFER_OFFSET);
+            memcpy(new_data, data, buffer_data_padding + BUFFER_OFFSET);
         }
 
         delete[] data;
@@ -126,6 +126,9 @@ namespace cppblowfish {
     }
 
     Buffer Buffer::from_whole_data(const void* whole_data, size_t whole_size) {
+        assert(whole_data != nullptr);
+        assert(whole_size > 0);
+
         Buffer buffer;
 
         buffer.data = new unsigned char[whole_size];
@@ -136,34 +139,41 @@ namespace cppblowfish {
         memcpy(buffer.data, whole_data, whole_size);
         buffer.capacity = whole_size;
         memcpy(&buffer.buffer_padding, whole_data, sizeof(size_t));
-        buffer.buffer_size = whole_size - BUFFER_OFFSET;
+        buffer.buffer_data_padding = whole_size - BUFFER_OFFSET;
 
         return buffer;
     }
 
     void Buffer::write_whole_data(std::ostream& stream) const {
-        Buffer::write_to_stream(stream, buffer_size + BUFFER_OFFSET, data);
+        Buffer::write_to_stream(stream, buffer_data_padding + BUFFER_OFFSET, data);
     }
 
     void Buffer::write_whole_data(unsigned char* out) const {
-        memcpy(out, data, buffer_size + BUFFER_OFFSET);
+        assert(out != nullptr);
+
+        memcpy(out, data, buffer_data_padding + BUFFER_OFFSET);
     }
 
     void Buffer::padd(size_t padd_count, unsigned char character) {
-        if (buffer_size + padd_count + BUFFER_OFFSET > capacity) {
-            reserve(buffer_size + padd_count + BUFFER_OFFSET);
+        assert(padd_count > 0);
+
+        if (buffer_data_padding + padd_count + BUFFER_OFFSET > capacity) {
+            reserve(buffer_data_padding + padd_count + BUFFER_OFFSET);
         }
 
         for (size_t i = 0; i < padd_count; i++) {
-            data[buffer_size + i + BUFFER_OFFSET] = character;
+            data[buffer_data_padding + i + BUFFER_OFFSET] = character;
         }
 
         memcpy(data, &padd_count, sizeof(size_t));
         buffer_padding = padd_count;
-        buffer_size += padd_count;
+        buffer_data_padding += padd_count;
     }
 
     void Buffer::write_to_stream(std::ostream& stream, size_t size, const void* data) {
+        assert(size > 0);
+        assert(data != nullptr);
+
         char* write_buffer = new char[size];
         memcpy(write_buffer, data, size);
 
@@ -173,7 +183,9 @@ namespace cppblowfish {
     }
 
     std::ostream& operator<<(std::ostream& stream, const Buffer& buffer) {
-        Buffer::write_to_stream(stream, buffer.buffer_size - buffer.buffer_padding, buffer.data + BUFFER_OFFSET);
+        Buffer::write_to_stream(
+            stream, buffer.buffer_data_padding - buffer.buffer_padding, buffer.data + BUFFER_OFFSET
+        );
 
         return stream;
     }
