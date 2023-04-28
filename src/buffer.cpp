@@ -27,12 +27,23 @@ namespace cppblowfish {
         capacity = BUFFER_OFFSET;
     }
 
-    Buffer::Buffer(const void* data, size_t size) {
+    Buffer::Buffer(size_t size) {
+        assert(size > 0);
+
         this->data = new unsigned char[size + BUFFER_OFFSET];
 
-        if (data != nullptr) {
-            memcpy(this->data + BUFFER_OFFSET, data, size);
-        }
+        memset(this->data, 0, BUFFER_OFFSET);
+
+        capacity = size + BUFFER_OFFSET;
+        buffer_data_padding = size;
+    }
+
+    Buffer::Buffer(const void* data, size_t size) {
+        assert(data != nullptr);
+        assert(size > 0);
+
+        this->data = new unsigned char[size + BUFFER_OFFSET];
+        memcpy(this->data + BUFFER_OFFSET, data, size);
 
         memset(this->data, 0, BUFFER_OFFSET);
 
@@ -90,7 +101,7 @@ namespace cppblowfish {
         return *this;
     }
 
-    Buffer& Buffer::operator+=(const internal::Uint32& uint32) {
+    Buffer& Buffer::operator+=(internal::Uint32 uint32) {
         constexpr size_t additional = sizeof(internal::Uint32);
 
         if (buffer_data_padding + BUFFER_OFFSET + additional > capacity) {
@@ -106,6 +117,17 @@ namespace cppblowfish {
 
     const unsigned char* Buffer::get() const {
         return data + BUFFER_OFFSET;
+    }
+
+    unsigned char* Buffer::steal() {
+        unsigned char* pointer = data;
+
+        data = nullptr;
+        capacity = 0;
+        buffer_padding = 0;
+        buffer_data_padding = 0;
+
+        return pointer;
     }
 
     void Buffer::reserve(size_t capacity) {

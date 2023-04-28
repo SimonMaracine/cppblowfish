@@ -37,7 +37,8 @@ namespace cppblowfish {
     class Buffer {
     public:
         Buffer();
-        Buffer(const void* data, size_t size);  // data can be null
+        Buffer(size_t size);
+        Buffer(const void* data, size_t size);
         ~Buffer();
 
         Buffer(const Buffer& other);
@@ -45,10 +46,14 @@ namespace cppblowfish {
         Buffer(Buffer&& other) noexcept;
         Buffer& operator=(Buffer&& other) noexcept;
 
-        Buffer& operator+=(const internal::Uint32& uint32);
+        Buffer& operator+=(internal::Uint32 uint32);
 
         // Pointer to the actual data (with an offset of BUFFER_OFFSET)
         const unsigned char* get() const;
+
+        // Get a pointer to the underlying data and invalidate the buffer
+        // To access the actual data, add BUFFER_OFFSET to it
+        unsigned char* steal();
 
         // Actual data size
         size_t size() const { return buffer_data_padding - buffer_padding; }
@@ -57,7 +62,7 @@ namespace cppblowfish {
 
         void reserve(size_t capacity);
 
-        // Create a new buffer from a previous buffer's whole data
+        // Create a new buffer from a previous buffer's whole data (write_whole_data())
         static Buffer from_whole_data(const void* whole_data, size_t whole_size);
 
         // Writes all the data (padding size + data + padding); not the additional allocated memory

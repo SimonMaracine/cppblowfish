@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <utility>
 #include <cstring>
+#include <cassert>
 
 #include "cppblowfish/internal/blowfish_context.h"
 #include "cppblowfish/internal/buffer.h"
@@ -259,6 +260,9 @@ namespace cppblowfish {
     }
 
     void BlowfishContext::initialize(const void* key, size_t size) {
+        assert(key != nullptr);
+        assert(size > 0);
+
         if (!is_little_endian()) {
             throw PlatformError("Unsupported platform");
         }
