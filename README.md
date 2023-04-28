@@ -57,6 +57,9 @@ std::cout << "output size: " << output.size() << std::endl;
 // Get the data and do whatever you want
 unsigned char* data = new unsigned char[output.size()];
 memcpy(data, output.get(), output.size());
+
+// Or steal the data
+// unsigned char* data = output.steal();
 ```
 
 ## Writing cipher to file and reading back
@@ -81,7 +84,7 @@ blowfish.encrypt(input, cipher);
     // Write **all** the contents of the buffer into the file
     cipher.write_whole_data(file);
 
-    // You can also write to a buffer created by you
+    // Or write to a buffer created by you
     // unsigned char* buffer = (
     //     new unsigned char[cipher.size() + cipher.padding() + cppblowfish::BUFFER_OFFSET]
     // );
@@ -115,4 +118,7 @@ blowfish.decrypt(cipher2, output);
 // Get the data and do whatever you want
 unsigned char* data = new unsigned char[output.size()];
 memcpy(data, output.get(), output.size());
+
+// Or steal the data
+// unsigned char* data = output.steal();
 ```
