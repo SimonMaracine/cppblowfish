@@ -122,10 +122,8 @@ namespace cppblowfish {
     unsigned char* Buffer::steal() {
         unsigned char* pointer = data;
 
+        // Reset only the pointer, the other data remains intact
         data = nullptr;
-        capacity = 0;
-        buffer_padding = 0;
-        buffer_data_padding = 0;
 
         return pointer;
     }

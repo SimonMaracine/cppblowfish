@@ -51,7 +51,7 @@ namespace cppblowfish {
         // Pointer to the actual data (with an offset of BUFFER_OFFSET)
         const unsigned char* get() const;
 
-        // Get a pointer to the underlying data and invalidate the buffer
+        // Get a pointer to the underlying data and invalidate the buffer (reset the pointer)
         // To access the actual data, add BUFFER_OFFSET to it
         unsigned char* steal();
 
