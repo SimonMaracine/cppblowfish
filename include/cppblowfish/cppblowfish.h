@@ -8,7 +8,7 @@
 namespace cppblowfish {
     inline constexpr unsigned int VERSION_MAJOR = 0;
     inline constexpr unsigned int VERSION_MINOR = 5;
-    inline constexpr unsigned int VERSION_PATCH = 1;
+    inline constexpr unsigned int VERSION_PATCH = 2;
 }
 
 #endif  // _CPPBLOWFISH_H_
