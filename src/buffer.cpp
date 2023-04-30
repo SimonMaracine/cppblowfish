@@ -147,14 +147,11 @@ namespace cppblowfish {
 
     Buffer Buffer::from_whole_data(const void* whole_data, size_t whole_size) {
         assert(whole_data != nullptr);
-        assert(whole_size > 0);
+        assert(whole_size >= BUFFER_OFFSET);
 
         Buffer buffer;
 
         buffer.data = new unsigned char[whole_size];
-
-        assert(whole_data != nullptr);
-        assert(whole_size >= BUFFER_OFFSET);
 
         memcpy(buffer.data, whole_data, whole_size);
         buffer.capacity = whole_size;
