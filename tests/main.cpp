@@ -148,11 +148,41 @@ DEFINE_TEST(buffer)
     ASSERT_EQ(buffer.padding(), 0)
 END_DEFINE_TEST()
 
+DEFINE_TEST(bigger_data)
+    std::string key = "some_random_not_great_key";
+
+    cppblowfish::BlowfishContext blowfish {key};
+
+    cppblowfish::Buffer input;
+
+    {
+        std::ifstream file {"../tests/shader.vert", std::ios::binary};
+        if (!file.is_open()) { ASSERT(false) }
+        file.seekg(0, file.end);
+        const size_t length = file.tellg();
+        file.seekg(0, file.beg);
+        char* buff = new char[length];
+        file.read(buff, length);
+        input = cppblowfish::Buffer {buff, length};
+        delete[] buff;
+    }
+
+    cppblowfish::Buffer cipher;
+    blowfish.encrypt(input, cipher);
+
+    cppblowfish::Buffer output;
+    blowfish.decrypt(cipher, output);
+
+    ASSERT_EQ(input.size(), output.size())
+    ASSERT_EQ(memcmp(input.get(), output.get(), input.size()), 0)
+END_DEFINE_TEST()
+
 int main() {
     INITIALIZE_UNIT_TEST()
     TEST(basic_usage)
     TEST(writing_cipher_to_file)
     TEST(buffer)
+    TEST(bigger_data)
     END_UNIT_TEST()
 
     std::string key = "mySECRETkey1234";

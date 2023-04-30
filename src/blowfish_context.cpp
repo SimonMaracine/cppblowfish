@@ -273,6 +273,9 @@ namespace cppblowfish {
             );
         }
 
+        // Set flag here, because encrypt_data() is called
+        initialized = true;
+
         memcpy(P_array, P_original, sizeof(uint32_t) * P_SIZE);
         memcpy(S_boxes, S_original, sizeof(uint32_t) * S_COUNT * S_SIZE);
 
@@ -303,21 +306,15 @@ namespace cppblowfish {
                 S_boxes[i][j + 1] = right;
             }
         }
-
-        initialized = true;
     }
 
     void BlowfishContext::encrypt(const Buffer& input, Buffer& cipher) {
+        assert(initialized);
+
         Buffer result;
 
         const size_t size = input.size();
-        const size_t padding = (
-            size > S_COUNT * 2
-            ?
-            ((size / (S_COUNT * 2)) + 1) * S_COUNT * 2 - size
-            :
-            S_COUNT * 2 - size
-        );
+        const size_t padding = (size / BLOCK + 1) * BLOCK - size;  // This adds a redundant 8 bytes of padding, if size % 8 == 0
 
         Buffer input_padded = input;
         input_padded.padd(padding, '\0');
@@ -343,6 +340,8 @@ namespace cppblowfish {
     }
 
     void BlowfishContext::decrypt(const Buffer& cipher, Buffer& output) {
+        assert(initialized);
+
         Buffer result;
         result.reserve(cipher.size() + cipher.padding());
 
@@ -365,6 +364,8 @@ namespace cppblowfish {
     }
 
     void BlowfishContext::encrypt_data(uint32_t* left, uint32_t* right) {
+        assert(initialized);
+
         for (size_t r = 0; r < 16; r++) {
             *left = *left ^ P_array[r];
             *right = f(*left) ^ *right;
@@ -377,6 +378,8 @@ namespace cppblowfish {
     }
 
     void BlowfishContext::decrypt_data(uint32_t* left, uint32_t* right) {
+        assert(initialized);
+
         for (size_t r = 17; r > 1; r--) {
             *left = *left ^ P_array[r];
             *right = f(*left) ^ *right;

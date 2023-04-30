@@ -25,7 +25,7 @@ To build without tests, include this before `add_subdirectory(...)`:
 set(CPPBLOWFISH_BUILD_TESTS OFF)
 ```
 
-## **If you have any suggestions for improvements, feel free to open up an issue**
+If you have any suggestions for improvements, feel free to open up an issue.
 
 ## Basic usage
 
