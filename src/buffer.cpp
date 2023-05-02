@@ -187,16 +187,12 @@ namespace cppblowfish {
         buffer_data_padding += padd_count;
     }
 
-    void Buffer::write_to_stream(std::ostream& stream, size_t size, const void* data) {
+    void Buffer::write_to_stream(std::ostream& stream, size_t size, const unsigned char* data) {
         assert(size > 0);
         assert(data != nullptr);
 
-        char* write_buffer = new char[size];
-        memcpy(write_buffer, data, size);
-
-        stream.write(write_buffer, size);
-
-        delete[] write_buffer;
+        // This is safe
+        stream.write(reinterpret_cast<const char*>(data), size);
     }
 
     std::ostream& operator<<(std::ostream& stream, const Buffer& buffer) {

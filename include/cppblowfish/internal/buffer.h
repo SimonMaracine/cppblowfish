@@ -71,7 +71,7 @@ namespace cppblowfish {
                                                           // and should have the size as size() + padding() + BUFFER_OFFSET
     private:
         void padd(size_t padd_count, unsigned char character);
-        static void write_to_stream(std::ostream& stream, size_t size, const void* data);
+        static void write_to_stream(std::ostream& stream, size_t size, const unsigned char* data);
 
         unsigned char* data = nullptr;
 
