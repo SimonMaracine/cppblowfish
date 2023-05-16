@@ -6,7 +6,7 @@ I use this library for myself. If it works for me, then maybe it works for you a
 
 Check the header files for _some_ documentation.
 
-To easily use this library, just include this repository as a submodule (or better fork the repository beforehand and use the forked version):
+To use this library easily, just include this repository as a submodule (or better fork the repository beforehand and use the forked version):
 
 `git submodule add https://github.com/SimonMaracine/cppblowfish.git <path/to/submodule/folder>`
 
@@ -50,13 +50,13 @@ std::cout << "cipher size: " << cipher.size() << std::endl;
 
 // Maybe do some other stuff...
 
-// Decrypt the data in the cipher and output it in the output buffer
+// Decrypt the data in the cipher buffer and output it in the output buffer
 blowfish.decrypt(cipher, output);
 
 std::cout << "output: " << output << std::endl;
 std::cout << "output size: " << output.size() << std::endl;
 
-// Get the data and do whatever you want
+// Copy the data and do whatever you want with it
 unsigned char* data = new unsigned char[output.size()];
 memcpy(data, output.get(), output.size());
 
@@ -117,7 +117,7 @@ cppblowfish::Buffer cipher2;
 
 blowfish.decrypt(cipher2, output);
 
-// Get the data and do whatever you want
+// Copy the data and do whatever you want with it
 unsigned char* data = new unsigned char[output.size()];
 memcpy(data, output.get(), output.size());
 
