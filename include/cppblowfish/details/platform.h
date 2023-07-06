@@ -1,10 +1,11 @@
 // Should be included only in blowfish_context.cpp
 
-#ifndef _PLATFORM_H_
-#define _PLATFORM_H_
+#ifndef PLATFORM_H
+#define PLATFORM_H
 
 #include <cstdint>
 
+// Support only 64-bit architectures
 #if SIZE_MAX != 0xFFFFFFFFFFFFFFFF
     #error "Unsupported platform"
 #endif
@@ -14,4 +15,4 @@ inline bool is_little_endian() {
     return reinterpret_cast<volatile const uint8_t*>(&whatever)[0] == 1;
 }
 
-#endif  // _PLATFORM_H_
+#endif  // PLATFORM_H

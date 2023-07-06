@@ -3,9 +3,9 @@
 #include <vector>
 #include <iostream>
 
-class _UnitTestContext {
+class UnitTestContext {
 public:
-    _UnitTestContext() = default;
+    UnitTestContext() = default;
 
     void add_test() {
         test_results.push_back(true);
@@ -32,55 +32,52 @@ public:
         }
 
         std::cout << passed << " test(s) passed, " << failed << " test(s) failed out of "
-                << test_results.size() << std::endl;
+                << test_results.size() << '\n';
     }
 private:
     std::vector<bool> test_results;
 };
 
 #define INITIALIZE_UNIT_TEST() \
-    _UnitTestContext* _context = new _UnitTestContext;
+    UnitTestContext* unit_test_context = new UnitTestContext;
 
 #define DEFINE_TEST(name) \
-    void name(_UnitTestContext* _context) {
-
-#define END_DEFINE_TEST() \
-    }
+    void name(UnitTestContext* unit_test_context)
 
 #define TEST(name) \
-    _context->add_test(); \
-    std::cout << "TESTING " << #name << std::endl; \
-    name(_context); \
-    if (_context->last_test_was_ok()) { \
-        std::cout << "OK\n" << std::endl; \
+    unit_test_context->add_test(); \
+    std::cout << "TESTING " << #name << '\n'; \
+    name(unit_test_context); \
+    if (unit_test_context->last_test_was_ok()) { \
+        std::cout << "OK\n" << '\n'; \
     } else { \
-        std::cout << "FAIL\n" << std::endl; \
+        std::cout << "FAIL\n" << '\n'; \
     }
 
 #define END_UNIT_TEST() \
-    _context->print_results(); \
-    delete _context;
+    unit_test_context->print_results(); \
+    delete unit_test_context;
 
 #define ASSERT(expression) \
     if (!(expression)) { \
-        _context->fail_this_test(); \
+        unit_test_context->fail_this_test(); \
         std::cout << "Assertion " << "'" << #expression << "'" \
-                << " failed; " << "line " << __LINE__ << std::endl; \
+                << " failed; " << "line " << __LINE__ << '\n'; \
         return; \
     }
 
 #define ASSERT_EQ(expression1, expression2) \
     if (!((expression1) == (expression2))) { \
-        _context->fail_this_test(); \
+        unit_test_context->fail_this_test(); \
         std::cout << "Assertion " << "'" << #expression1 << " == " << #expression2 << "'" \
-                << " failed; " << "line " << __LINE__ << std::endl; \
+                << " failed; " << "line " << __LINE__ << '\n'; \
         return; \
     }
 
 #define ASSERT_NEQ(expression1, expression2) \
     if (!((expression1) != (expression2))) { \
-        _context->fail_this_test(); \
+        unit_test_context->fail_this_test(); \
         std::cout << "Assertion " << "'" << #expression1 << " != " << #expression2 << "'" \
-                << " failed; " << "line " << __LINE__ << std::endl; \
+                << " failed; " << "line " << __LINE__ << '\n'; \
         return; \
     }

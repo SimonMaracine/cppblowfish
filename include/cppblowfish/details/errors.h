@@ -1,5 +1,5 @@
-#ifndef _ERRORS_H_
-#define _ERRORS_H_
+#ifndef ERRORS_H
+#define ERRORS_H
 
 #include <stdexcept>
 
@@ -9,14 +9,6 @@ namespace cppblowfish {
         explicit AlreadyInitializedError(const std::string& message)
             : std::logic_error(message) {}
         explicit AlreadyInitializedError(const char* message)
-            : std::logic_error(message) {}
-    };
-
-    class AllocationError : public std::logic_error {
-    public:
-        explicit AllocationError(const std::string& message)
-            : std::logic_error(message) {}
-        explicit AllocationError(const char* message)
             : std::logic_error(message) {}
     };
 
@@ -37,4 +29,4 @@ namespace cppblowfish {
     };
 }
 
-#endif  // _ERRORS_H_
+#endif  // ERRORS_H

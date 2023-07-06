@@ -13,7 +13,7 @@
 
 #include "unit_test.h"
 
-DEFINE_TEST(basic_usage)
+DEFINE_TEST(basic_usage) {
     std::string key = "mySECRETkey1234";
     std::string message = "Hello, world. Why are you sad?";
 
@@ -63,9 +63,9 @@ DEFINE_TEST(basic_usage)
     ASSERT_EQ(output.padding(), 2)
 
     ASSERT_EQ(output.size(), message.size())
-END_DEFINE_TEST()
+}
 
-DEFINE_TEST(writing_cipher_to_file)
+DEFINE_TEST(writing_cipher_to_file) {
     std::string key = "ThisIsMyKey19S";
     std::string message = "And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works.";
 
@@ -130,9 +130,9 @@ DEFINE_TEST(writing_cipher_to_file)
     ASSERT_EQ(output.padding(), 8)
 
     ASSERT_EQ(output.size(), message.size())
-END_DEFINE_TEST()
+}
 
-DEFINE_TEST(buffer)
+DEFINE_TEST(buffer) {
     constexpr size_t size = 4;
     char data[size] = { 'L', 'i', 'n', 'u' };
     cppblowfish::Buffer buffer {data, size};
@@ -146,9 +146,9 @@ DEFINE_TEST(buffer)
     ASSERT_EQ(buffer.get()[4], 'x')
     ASSERT_EQ(buffer.size(), size + 4)
     ASSERT_EQ(buffer.padding(), 0)
-END_DEFINE_TEST()
+}
 
-DEFINE_TEST(bigger_data)
+DEFINE_TEST(bigger_data) {
     std::string key = "some_random_not_great_key";
 
     cppblowfish::BlowfishContext blowfish {key};
@@ -175,7 +175,7 @@ DEFINE_TEST(bigger_data)
 
     ASSERT_EQ(input.size(), output.size())
     ASSERT_EQ(memcmp(input.get(), output.get(), input.size()), 0)
-END_DEFINE_TEST()
+}
 
 int main() {
     INITIALIZE_UNIT_TEST()

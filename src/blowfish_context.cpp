@@ -4,10 +4,11 @@
 #include <cstring>
 #include <cassert>
 
-#include "cppblowfish/internal/blowfish_context.h"
-#include "cppblowfish/internal/buffer.h"
-#include "cppblowfish/internal/errors.h"
-#include "cppblowfish/internal/platform.h"
+#include "cppblowfish/details/blowfish_context.h"
+#include "cppblowfish/details/buffer.h"
+#include "cppblowfish/details/errors.h"
+
+#include "cppblowfish/details/platform.h"
 
 static constexpr size_t MIN_BYTES = 4;  // 32
 static constexpr size_t MAX_BYTES = 56;  // 448
@@ -276,8 +277,8 @@ namespace cppblowfish {
         // Set flag here, because encrypt_data() is called
         initialized = true;
 
-        memcpy(P_array, P_original, sizeof(uint32_t) * P_SIZE);
-        memcpy(S_boxes, S_original, sizeof(uint32_t) * S_COUNT * S_SIZE);
+        std::memcpy(P_array, P_original, sizeof(uint32_t) * P_SIZE);
+        std::memcpy(S_boxes, S_original, sizeof(uint32_t) * S_COUNT * S_SIZE);
 
         for (size_t i = 0, p = 0; i < P_SIZE; i++) {
             uint32_t k = 0x00;
@@ -324,8 +325,8 @@ namespace cppblowfish {
         uint32_t left, right;
 
         for (size_t i = 0; i < input_padded.size() + input_padded.padding(); i += BLOCK) {
-            memcpy(&left, input_padded.get() + i, sizeof(uint32_t));
-            memcpy(&right, input_padded.get() + i + HALF_BLOCK, sizeof(uint32_t));
+            std::memcpy(&left, input_padded.get() + i, sizeof(uint32_t));
+            std::memcpy(&right, input_padded.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
             encrypt_data(&left, &right);
 
@@ -333,7 +334,7 @@ namespace cppblowfish {
             result += internal::repr_uint32(right);
         }
 
-        memcpy(result.data, &input_padded.buffer_padding, sizeof(size_t));
+        std::memcpy(result.data, &input_padded.buffer_padding, sizeof(size_t));
         result.buffer_padding = input_padded.buffer_padding;
 
         cipher = std::move(result);
@@ -348,8 +349,8 @@ namespace cppblowfish {
         uint32_t left, right;
 
         for (size_t i = 0; i < cipher.size() + cipher.padding(); i += BLOCK) {
-            memcpy(&left, cipher.get() + i, sizeof(uint32_t));
-            memcpy(&right, cipher.get() + i + HALF_BLOCK, sizeof(uint32_t));
+            std::memcpy(&left, cipher.get() + i, sizeof(uint32_t));
+            std::memcpy(&right, cipher.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
             decrypt_data(&left, &right);
 
@@ -357,7 +358,7 @@ namespace cppblowfish {
             result += internal::repr_uint32(right);
         }
 
-        memcpy(result.data, &cipher.buffer_padding, sizeof(size_t));
+        std::memcpy(result.data, &cipher.buffer_padding, sizeof(size_t));
         result.buffer_padding = cipher.buffer_padding;
 
         output = std::move(result);
@@ -391,7 +392,7 @@ namespace cppblowfish {
         *left = *left ^ P_array[0];
     }
 
-    uint32_t BlowfishContext::f(uint32_t x) {
+    uint32_t BlowfishContext::f(uint32_t x) noexcept {
         uint32_t a, b, c, d;
         uint32_t result;
 

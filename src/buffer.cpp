@@ -5,8 +5,7 @@
 #include <cstring>
 #include <cstddef>
 
-#include "cppblowfish/internal/buffer.h"
-#include "cppblowfish/internal/errors.h"
+#include "cppblowfish/details/buffer.h"
 
 namespace cppblowfish {
     namespace internal {
@@ -23,7 +22,7 @@ namespace cppblowfish {
 
     Buffer::Buffer() {
         data = new unsigned char[BUFFER_OFFSET];
-        memset(data, 0, BUFFER_OFFSET);
+        std::memset(data, 0, BUFFER_OFFSET);
         capacity = BUFFER_OFFSET;
     }
 
@@ -32,7 +31,7 @@ namespace cppblowfish {
 
         this->data = new unsigned char[size + BUFFER_OFFSET];
 
-        memset(this->data, 0, BUFFER_OFFSET);
+        std::memset(this->data, 0, BUFFER_OFFSET);
 
         capacity = size + BUFFER_OFFSET;
         buffer_data_padding = size;
@@ -43,9 +42,9 @@ namespace cppblowfish {
         assert(size > 0);
 
         this->data = new unsigned char[size + BUFFER_OFFSET];
-        memcpy(this->data + BUFFER_OFFSET, data, size);
+        std::memcpy(this->data + BUFFER_OFFSET, data, size);
 
-        memset(this->data, 0, BUFFER_OFFSET);
+        std::memset(this->data, 0, BUFFER_OFFSET);
 
         capacity = size + BUFFER_OFFSET;
         buffer_data_padding = size;
@@ -62,7 +61,7 @@ namespace cppblowfish {
         buffer_data_padding = other.buffer_data_padding;
 
         data = new unsigned char[other.capacity];
-        memcpy(data, other.data, other.buffer_data_padding + BUFFER_OFFSET);
+        std::memcpy(data, other.data, other.buffer_data_padding + BUFFER_OFFSET);
     }
 
     Buffer& Buffer::operator=(const Buffer& other) {
@@ -74,7 +73,7 @@ namespace cppblowfish {
         buffer_data_padding = other.buffer_data_padding;
 
         data = new unsigned char[other.capacity];
-        memcpy(data, other.data, other.buffer_data_padding + BUFFER_OFFSET);
+        std::memcpy(data, other.data, other.buffer_data_padding + BUFFER_OFFSET);
 
         return *this;
     }
@@ -108,7 +107,7 @@ namespace cppblowfish {
             reserve(buffer_data_padding + BUFFER_OFFSET + additional);
         }
 
-        memcpy(data + buffer_data_padding + BUFFER_OFFSET, &uint32, additional);  // Uint32 is trivially copyable
+        std::memcpy(data + buffer_data_padding + BUFFER_OFFSET, &uint32, additional);  // Uint32 is trivially copyable
 
         buffer_data_padding += additional;
 
@@ -129,14 +128,12 @@ namespace cppblowfish {
     }
 
     void Buffer::reserve(size_t capacity) {
-        if (capacity < buffer_data_padding) {
-            throw AllocationError("The new capacity is smaller than the current buffer size");
-        }
+        assert(capacity > buffer_data_padding);
 
         unsigned char* new_data = new unsigned char[capacity];
 
         if (data != nullptr) {
-            memcpy(new_data, data, buffer_data_padding + BUFFER_OFFSET);
+            std::memcpy(new_data, data, buffer_data_padding + BUFFER_OFFSET);
         }
 
         delete[] data;
@@ -153,9 +150,9 @@ namespace cppblowfish {
 
         buffer.data = new unsigned char[whole_size];
 
-        memcpy(buffer.data, whole_data, whole_size);
+        std::memcpy(buffer.data, whole_data, whole_size);
         buffer.capacity = whole_size;
-        memcpy(&buffer.buffer_padding, whole_data, sizeof(size_t));
+        std::memcpy(&buffer.buffer_padding, whole_data, sizeof(size_t));
         buffer.buffer_data_padding = whole_size - BUFFER_OFFSET;
 
         return buffer;
@@ -168,7 +165,7 @@ namespace cppblowfish {
     void Buffer::write_whole_data(unsigned char* out) const {
         assert(out != nullptr);
 
-        memcpy(out, data, buffer_data_padding + BUFFER_OFFSET);
+        std::memcpy(out, data, buffer_data_padding + BUFFER_OFFSET);
     }
 
     void Buffer::padd(size_t padd_count, unsigned char character) {
@@ -182,7 +179,7 @@ namespace cppblowfish {
             data[buffer_data_padding + i + BUFFER_OFFSET] = character;
         }
 
-        memcpy(data, &padd_count, sizeof(size_t));
+        std::memcpy(data, &padd_count, sizeof(size_t));
         buffer_padding = padd_count;
         buffer_data_padding += padd_count;
     }

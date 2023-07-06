@@ -1,56 +1,54 @@
 cmake_minimum_required(VERSION 3.20)
 
-set(LIB "cppblowfish")
-set(TEST "test")
-
-option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside library" ON)
+option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside the library" OFF)
 
 project("cppblowfish"
-    VERSION 0.5.5
+    VERSION 0.6.0
     LANGUAGES CXX
 )
 
 set(HEADERS
-    "include/cppblowfish/internal/blowfish_context.h"
-    "include/cppblowfish/internal/buffer.h"
-    "include/cppblowfish/internal/errors.h"
-    "include/cppblowfish/internal/platform.h"
+    "include/cppblowfish/details/blowfish_context.h"
+    "include/cppblowfish/details/buffer.h"
+    "include/cppblowfish/details/errors.h"
+    "include/cppblowfish/details/platform.h"
+    "include/cppblowfish/details/version.h"
     "include/cppblowfish/cppblowfish.h"
 )
 
-add_library(${LIB} STATIC
+add_library(cppblowfish STATIC
     "src/blowfish_context.cpp"
     "src/buffer.cpp"
     ${HEADERS}
 )
 
-if(CPPBLOWFISH_BUILD_TESTS)
-    add_executable(${TEST} "tests/main.cpp")
+if(${CPPBLOWFISH_BUILD_TESTS})
+    add_executable(test "tests/main.cpp")
 endif()
 
 if(UNIX)
-    target_compile_options(${LIB} PRIVATE -Wall -Wextra)
+    target_compile_options(cppblowfish PRIVATE -Wall -Wextra)
 
-    if(CPPBLOWFISH_BUILD_TESTS)
-        target_compile_options(${TEST} PRIVATE -Wall -Wextra)
+    if(${CPPBLOWFISH_BUILD_TESTS})
+        target_compile_options(test PRIVATE -Wall -Wextra)
     endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(${LIB} PRIVATE /W3)
+    target_compile_options(cppblowfish PRIVATE /W3)
 
-    if(CPPBLOWFISH_BUILD_TESTS)
-        target_compile_options(${TEST} PRIVATE /W3)
+    if(${CPPBLOWFISH_BUILD_TESTS})
+        target_compile_options(test PRIVATE /W3)
     endif()
 else()
     message(WARNING "Compiler is not MSVC or platform is not supported; warnings were not enabled")
 endif()
 
-target_include_directories(${LIB} PUBLIC "include")
+target_include_directories(cppblowfish PUBLIC "include")
 
-if(CPPBLOWFISH_BUILD_TESTS)
-    target_link_libraries(${TEST} PRIVATE ${LIB})
+if(${CPPBLOWFISH_BUILD_TESTS})
+    target_link_libraries(test PRIVATE cppblowfish)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(${LIB} PRIVATE NDEBUG)
+    target_compile_definitions(cppblowfish PRIVATE "NDEBUG")
     message(STATUS "Compiling cppblowfish in release mode")
 endif()

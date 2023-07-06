@@ -1,12 +1,13 @@
-#ifndef _BLOWFISH_CONTEXT_H_
-#define _BLOWFISH_CONTEXT_H_
+#ifndef BLOWFISH_CONTEXT_H
+#define BLOWFISH_CONTEXT_H
 
 #include <string>
 #include <cstdint>
-
-#include "buffer.h"
+#include <cstddef>
 
 namespace cppblowfish {
+    class Buffer;
+
     class BlowfishContext {
     public:
         BlowfishContext() = default;
@@ -27,7 +28,7 @@ namespace cppblowfish {
         void encrypt_data(uint32_t* left, uint32_t* right);
         void decrypt_data(uint32_t* left, uint32_t* right);
     private:
-        uint32_t f(uint32_t x);
+        uint32_t f(uint32_t x) noexcept;
 
         uint32_t P_array[18];
         uint32_t S_boxes[4][256];
@@ -35,4 +36,4 @@ namespace cppblowfish {
     };
 }
 
-#endif  // _BLOWFISH_CONTEXT_H_
+#endif  // BLOWFISH_CONTEXT_H

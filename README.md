@@ -19,10 +19,10 @@ target_link_libraries(<your_target> PRIVATE cppblowfish)
 
 The CMake script builds the library as static.
 
-To build without tests, include this before `add_subdirectory(...)`:
+To build with tests, include this before `add_subdirectory(...)`:
 
 ```cmake
-set(CPPBLOWFISH_BUILD_TESTS OFF)
+set(CPPBLOWFISH_BUILD_TESTS ON)
 ```
 
 If you have any suggestions for improvements, feel free to open up an issue.

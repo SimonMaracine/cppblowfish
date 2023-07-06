@@ -1,14 +1,11 @@
-#ifndef _CPPBLOWFISH_H_
-#define _CPPBLOWFISH_H_
+// This is just a convenience header
 
-#include "internal/blowfish_context.h"
-#include "internal/buffer.h"
-#include "internal/errors.h"
+#ifndef CPPBLOWFISH_H
+#define CPPBLOWFISH_H
 
-namespace cppblowfish {
-    inline constexpr unsigned int VERSION_MAJOR = 0;
-    inline constexpr unsigned int VERSION_MINOR = 5;
-    inline constexpr unsigned int VERSION_PATCH = 5;
-}
+#include "details/blowfish_context.h"
+#include "details/buffer.h"
+#include "details/errors.h"
+#include "details/version.h"
 
-#endif  // _CPPBLOWFISH_H_
+#endif  // CPPBLOWFISH_H

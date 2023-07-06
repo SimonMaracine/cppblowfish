@@ -1,8 +1,9 @@
-#ifndef _BUFFER_H_
-#define _BUFFER_H_
+#ifndef BUFFER_H
+#define BUFFER_H
 
 #include <ostream>
 #include <cstdint>
+#include <cstddef>
 
 /*
     The buffer is as follows:
@@ -87,4 +88,4 @@ namespace cppblowfish {
     std::ostream& operator<<(std::ostream& stream, const Buffer& buffer);
 }
 
-#endif  // _BUFFER_H_
+#endif  // BUFFER_H
