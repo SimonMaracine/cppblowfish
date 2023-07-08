@@ -9,7 +9,7 @@
 #include <fstream>
 #include <string.h>
 
-#include <cppblowfish/cppblowfish.h>
+#include <cppblowfish/cppblowfish.hpp>
 
 #include "unit_test.h"
 

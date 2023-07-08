@@ -5,7 +5,7 @@
 #include <cstring>
 #include <cstddef>
 
-#include "cppblowfish/details/buffer.h"
+#include "cppblowfish/details/buffer.hpp"
 
 namespace cppblowfish {
     namespace internal {

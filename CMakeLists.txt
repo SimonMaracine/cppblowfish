@@ -1,54 +1,42 @@
 cmake_minimum_required(VERSION 3.20)
 
 option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside the library" OFF)
+option(BUILD_SHARED_LIBS "Build the library as static or dynamic" OFF)
 
 project("cppblowfish"
-    VERSION 0.6.0
+    VERSION 0.7.0
     LANGUAGES CXX
 )
 
-set(HEADERS
-    "include/cppblowfish/details/blowfish_context.h"
-    "include/cppblowfish/details/buffer.h"
-    "include/cppblowfish/details/errors.h"
-    "include/cppblowfish/details/platform.h"
-    "include/cppblowfish/details/version.h"
-    "include/cppblowfish/cppblowfish.h"
-)
-
-add_library(cppblowfish STATIC
+add_library(cppblowfish
     "src/blowfish_context.cpp"
     "src/buffer.cpp"
-    ${HEADERS}
+    "include/cppblowfish/details/blowfish_context.hpp"
+    "include/cppblowfish/details/buffer.hpp"
+    "include/cppblowfish/details/errors.hpp"
+    "include/cppblowfish/details/platform.hpp"
+    "include/cppblowfish/details/version.hpp"
+    "include/cppblowfish/cppblowfish.hpp"
 )
-
-if(${CPPBLOWFISH_BUILD_TESTS})
-    add_executable(test "tests/main.cpp")
-endif()
 
 if(UNIX)
     target_compile_options(cppblowfish PRIVATE -Wall -Wextra)
-
-    if(${CPPBLOWFISH_BUILD_TESTS})
-        target_compile_options(test PRIVATE -Wall -Wextra)
-    endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(cppblowfish PRIVATE /W3)
-
-    if(${CPPBLOWFISH_BUILD_TESTS})
-        target_compile_options(test PRIVATE /W3)
-    endif()
 else()
     message(WARNING "Compiler is not MSVC or platform is not supported; warnings were not enabled")
 endif()
 
 target_include_directories(cppblowfish PUBLIC "include")
 
-if(${CPPBLOWFISH_BUILD_TESTS})
-    target_link_libraries(test PRIVATE cppblowfish)
-endif()
-
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(cppblowfish PRIVATE "NDEBUG")
-    message(STATUS "Compiling cppblowfish in release mode")
+    message(STATUS "cppblowfish: Building library in release mode")
 endif()
+
+if(CPPBLOWFISH_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
+
+message(STATUS "cppblowfish: Building shared library: ${BUILD_SHARED_LIBS}")
+message(STATUS "cppblowfish: Building tests: ${CPPBLOWFISH_BUILD_TESTS}")

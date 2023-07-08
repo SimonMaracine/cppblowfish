@@ -4,11 +4,11 @@
 #include <cstring>
 #include <cassert>
 
-#include "cppblowfish/details/blowfish_context.h"
-#include "cppblowfish/details/buffer.h"
-#include "cppblowfish/details/errors.h"
+#include "cppblowfish/details/blowfish_context.hpp"
+#include "cppblowfish/details/buffer.hpp"
+#include "cppblowfish/details/errors.hpp"
 
-#include "cppblowfish/details/platform.h"
+#include "cppblowfish/details/platform.hpp"
 
 static constexpr size_t MIN_BYTES = 4;  // 32
 static constexpr size_t MAX_BYTES = 56;  // 448
