@@ -17,7 +17,7 @@ add_subdirectory(<path/to/submodule/folder>)
 target_link_libraries(<your_target> PRIVATE cppblowfish)
 ```
 
-The CMake script builds the library as static.
+The CMake script builds the library by default as static.
 
 To build with tests, include this before `add_subdirectory(...)`:
 
