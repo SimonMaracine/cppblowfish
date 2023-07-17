@@ -11,8 +11,11 @@ namespace cppblowfish {
     class BlowfishContext {
     public:
         BlowfishContext() = default;
+
+        // Constructors (and initialize) can throw exceptions: AlreadyInitializedError and KeyError
         explicit BlowfishContext(const std::string& key);
         explicit BlowfishContext(const void* key, size_t size);
+
         ~BlowfishContext() = default;
 
         BlowfishContext(const BlowfishContext&) = default;
@@ -20,7 +23,10 @@ namespace cppblowfish {
         BlowfishContext(BlowfishContext&&) noexcept = default;
         BlowfishContext& operator=(BlowfishContext&&) noexcept = default;
 
+        // Initialize the context, if before it was default constructed
         void initialize(const void* key, size_t size);
+
+        // Usual encryption-decryption
         void encrypt(const Buffer& input, Buffer& cipher);
         void decrypt(const Buffer& cipher, Buffer& output);
 

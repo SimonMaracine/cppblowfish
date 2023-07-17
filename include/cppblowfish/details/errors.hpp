@@ -2,6 +2,7 @@
 #define ERRORS_H
 
 #include <stdexcept>
+#include <string>
 
 namespace cppblowfish {
     class AlreadyInitializedError : public std::logic_error {
@@ -18,14 +19,6 @@ namespace cppblowfish {
             : std::logic_error(message) {}
         explicit KeyError(const char* message)
             : std::logic_error(message) {}
-    };
-
-    class PlatformError : public std::runtime_error {
-    public:
-        explicit PlatformError(const std::string& message)
-            : std::runtime_error(message) {}
-        explicit PlatformError(const char* message)
-            : std::runtime_error(message) {}
     };
 }
 

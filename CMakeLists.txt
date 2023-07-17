@@ -4,7 +4,7 @@ option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside the library" 
 option(BUILD_SHARED_LIBS "Build the library as static or dynamic" OFF)
 
 project("cppblowfish"
-    VERSION 0.7.0
+    VERSION 0.8.0
     LANGUAGES CXX
 )
 
@@ -20,9 +20,9 @@ add_library(cppblowfish
 )
 
 if(UNIX)
-    target_compile_options(cppblowfish PRIVATE -Wall -Wextra)
+    target_compile_options(cppblowfish PRIVATE "-Wall" "-Wextra" "-Wpedantic")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(cppblowfish PRIVATE /W3)
+    target_compile_options(cppblowfish PRIVATE "/W3")
 else()
     message(WARNING "Compiler is not MSVC or platform is not supported; warnings were not enabled")
 endif()

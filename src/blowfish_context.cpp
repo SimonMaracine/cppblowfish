@@ -3,6 +3,8 @@
 #include <utility>
 #include <cstring>
 #include <cassert>
+#include <cstdint>
+#include <cstddef>
 
 #include "cppblowfish/details/blowfish_context.hpp"
 #include "cppblowfish/details/buffer.hpp"
@@ -264,9 +266,7 @@ namespace cppblowfish {
         assert(key != nullptr);
         assert(size > 0);
 
-        if (!is_little_endian()) {
-            throw PlatformError("Unsupported platform");
-        }
+        assert(is_little_endian());
 
         if (initialized) {
             throw AlreadyInitializedError(
@@ -281,7 +281,7 @@ namespace cppblowfish {
         std::memcpy(S_boxes, S_original, sizeof(uint32_t) * S_COUNT * S_SIZE);
 
         for (size_t i = 0, p = 0; i < P_SIZE; i++) {
-            uint32_t k = 0x00;
+            uint32_t k = 0;
 
             for (size_t j = 0; j < S_COUNT; j++) {
                 k = (k << 8) | static_cast<const uint8_t*>(key)[p];
@@ -291,8 +291,8 @@ namespace cppblowfish {
             P_array[i] ^= k;
         }
 
-        uint32_t left = 0x00;
-        uint32_t right = 0x00;
+        uint32_t left = 0;
+        uint32_t right = 0;
 
         for (size_t i = 0; i < P_SIZE; i += 2) {
             encrypt_data(&left, &right);
@@ -322,9 +322,9 @@ namespace cppblowfish {
 
         result.reserve(size + padding);
 
-        uint32_t left, right;
-
         for (size_t i = 0; i < input_padded.size() + input_padded.padding(); i += BLOCK) {
+            uint32_t left, right;
+
             std::memcpy(&left, input_padded.get() + i, sizeof(uint32_t));
             std::memcpy(&right, input_padded.get() + i + HALF_BLOCK, sizeof(uint32_t));
 
@@ -346,9 +346,9 @@ namespace cppblowfish {
         Buffer result;
         result.reserve(cipher.size() + cipher.padding());
 
-        uint32_t left, right;
-
         for (size_t i = 0; i < cipher.size() + cipher.padding(); i += BLOCK) {
+            uint32_t left, right;
+
             std::memcpy(&left, cipher.get() + i, sizeof(uint32_t));
             std::memcpy(&right, cipher.get() + i + HALF_BLOCK, sizeof(uint32_t));
 

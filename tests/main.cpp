@@ -156,7 +156,7 @@ DEFINE_TEST(bigger_data) {
     cppblowfish::Buffer input;
 
     {
-        std::ifstream file {"../tests/shader.txt", std::ios::binary};
+        std::ifstream file {"shader.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         file.seekg(0, file.end);
         const size_t length = file.tellg();
