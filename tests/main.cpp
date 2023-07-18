@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <string.h>
+#include <cstring>
 
 #include <cppblowfish/cppblowfish.hpp>
 
@@ -137,7 +137,7 @@ DEFINE_TEST(buffer) {
     char data[size] = { 'L', 'i', 'n', 'u' };
     cppblowfish::Buffer buffer {data, size};
 
-    ASSERT_EQ(memcmp(buffer.get(), data, size), 0)
+    ASSERT_EQ(std::memcmp(buffer.get(), data, size), 0)
     ASSERT_EQ(buffer.size(), size)
     ASSERT_EQ(buffer.padding(), 0)
 
@@ -174,7 +174,7 @@ DEFINE_TEST(bigger_data) {
     blowfish.decrypt(cipher, output);
 
     ASSERT_EQ(input.size(), output.size())
-    ASSERT_EQ(memcmp(input.get(), output.get(), input.size()), 0)
+    ASSERT_EQ(std::memcmp(input.get(), output.get(), input.size()), 0)
 }
 
 int main() {

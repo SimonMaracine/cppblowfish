@@ -2,11 +2,13 @@
 
 ## A small C++ encryption library implementing the blowfish algorithm
 
-I built this library for myself. If it works for me, then maybe it works for you as well.
+I built this library for myself. If it works for me, then maybe it works for you as well. It tested
+it on GCC and MSVC.
 
-Check the header files for _some_ documentation.
+Check the header files for _some_ documentation. And check out `tests/main.cpp` for a working
+example.
 
-To use this library easily, just include this repository as a submodule (or better fork the repository beforehand and use the forked version):
+To use this library, just include this repository as a submodule like this:
 
 `git submodule add https://github.com/SimonMaracine/cppblowfish.git <path/to/submodule/folder>`
 
@@ -17,12 +19,16 @@ add_subdirectory(<path/to/submodule/folder>)
 target_link_libraries(<your_target> PRIVATE cppblowfish)
 ```
 
-The CMake script builds the library by default as static.
-
 To build with tests, include this before `add_subdirectory(...)`:
 
 ```cmake
 set(CPPBLOWFISH_BUILD_TESTS ON)
+```
+
+The CMake script builds the library by default as static. If you want it dynamic:
+
+```cmake
+set(BUILD_SHARED_LIBS ON)
 ```
 
 If you have any suggestions for improvements, feel free to open up an issue.
@@ -45,20 +51,20 @@ cppblowfish::Buffer output;
 // Encrypt the data in the input buffer and output it in the cipher buffer
 blowfish.encrypt(input, cipher);
 
-std::cout << "cipher: " << cipher << std::endl;
-std::cout << "cipher size: " << cipher.size() << std::endl;
+std::cout << "cipher: " << cipher << '\n';
+std::cout << "cipher size: " << cipher.size() << '\n';
 
 // Maybe do some other stuff...
 
 // Decrypt the data in the cipher buffer and output it in the output buffer
 blowfish.decrypt(cipher, output);
 
-std::cout << "output: " << output << std::endl;
-std::cout << "output size: " << output.size() << std::endl;
+std::cout << "output: " << output << '\n';
+std::cout << "output size: " << output.size() << '\n';
 
 // Copy the data and do whatever you want with it
 unsigned char* data = new unsigned char[output.size()];
-memcpy(data, output.get(), output.size());
+std::memcpy(data, output.get(), output.size());
 
 // Or steal the data
 // unsigned char* data = output.steal();
@@ -119,7 +125,7 @@ blowfish.decrypt(cipher2, output);
 
 // Copy the data and do whatever you want with it
 unsigned char* data = new unsigned char[output.size()];
-memcpy(data, output.get(), output.size());
+std::memcpy(data, output.get(), output.size());
 
 // Or steal the data
 // unsigned char* data = output.steal();

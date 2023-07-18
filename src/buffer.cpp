@@ -119,9 +119,9 @@ namespace cppblowfish {
     }
 
     unsigned char* Buffer::steal() {
-        unsigned char* pointer = data;
+        unsigned char* pointer = data + BUFFER_OFFSET;
 
-        // Reset only the pointer, the other data remains intact
+        // Reset only the pointer, the other member data remain intact
         data = nullptr;
 
         return pointer;
