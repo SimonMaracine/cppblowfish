@@ -206,6 +206,6 @@ int main() {
 
     std::cout << "output: " << output << '\n';
     std::cout << "output size: " << output.size() << '\n';
-    std::cout << "input, cipher, output padding: " << input.padding() << ", " << cipher.padding()
-            << ", " << output.padding() << '\n';
+    std::cout << "input, cipher, output padding: " << input.padding()
+        << ", " << cipher.padding() << ", " << output.padding() << '\n';
 }

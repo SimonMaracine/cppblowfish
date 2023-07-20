@@ -3,7 +3,7 @@
 ## A small C++ encryption library implementing the blowfish algorithm
 
 I built this library for myself. If it works for me, then maybe it works for you as well. I tested
-it on GCC and MSVC.
+it on GCC and MSVC. It requires at least `C++17`.
 
 Check the header files for _some_ documentation. And check out `tests/main.cpp` for a working
 example.
@@ -87,7 +87,7 @@ blowfish.encrypt(input, cipher);
 // Write cipher to file
 {
     std::ofstream file {"cipher.txt", std::ios::binary | std::ios::trunc};
-    if (!file.is_open()) { exit(1); }
+    if (!file.is_open()) { std::exit(1); }
 
     // Write **all** the contents of the buffer into the file
     cipher.write_whole_data(file);
@@ -106,7 +106,7 @@ cppblowfish::Buffer cipher2;
 // Read cipher back from file
 {
     std::ifstream file {"cipher.txt", std::ios::binary};
-    if (!file.is_open()) { exit(1); }
+    if (!file.is_open()) { std::exit(1); }
 
     file.seekg(0, file.end);
     const size_t length = file.tellg();

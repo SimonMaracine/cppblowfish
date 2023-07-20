@@ -12,6 +12,9 @@ else()
     message(WARNING "Compiler is not MSVC or platform is not supported; warnings were not enabled")
 endif()
 
+target_compile_features(test PRIVATE cxx_std_17)
+set_target_properties(test PROPERTIES CXX_EXTENSIONS OFF)
+
 file(
     COPY "${CMAKE_CURRENT_SOURCE_DIR}/shader.txt"
     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"

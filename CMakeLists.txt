@@ -34,6 +34,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "cppblowfish: Building library in release mode")
 endif()
 
+target_compile_features(cppblowfish PRIVATE cxx_std_17)
+set_target_properties(cppblowfish PROPERTIES CXX_EXTENSIONS OFF)
+
 if(CPPBLOWFISH_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
