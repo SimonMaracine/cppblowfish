@@ -3,7 +3,7 @@
 ## A small C++ encryption library implementing the blowfish algorithm
 
 I built this library for myself. If it works for me, then maybe it works for you as well. I tested
-it on GCC and MSVC. It requires at least `C++17`.
+it on `GCC 13` and `MSVC 19.34`. It requires at least `C++ 17`.
 
 Check the header files for _some_ documentation. And check out `tests/main.cpp` for a working
 example.
