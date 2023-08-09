@@ -112,13 +112,13 @@ cppblowfish::Buffer cipher2;
     const size_t length = file.tellg();
     file.seekg(0, file.beg);
 
-    char* buff = new char[length];
-    file.read(buff, length);
+    char* raw_buffer = new char[length];
+    file.read(raw_buffer, length);
 
     // Create a new buffer from **all** the contents of a previous buffer
-    cipher2 = cppblowfish::Buffer::from_whole_data(buff, length);
+    cipher2 = cppblowfish::Buffer::from_whole_data(raw_buffer, length);
 
-    delete[] buff;
+    delete[] raw_buffer;
 }
 
 blowfish.decrypt(cipher2, output);

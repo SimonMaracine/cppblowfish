@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <cstddef>
 
 #include <cppblowfish/cppblowfish.hpp>
 
@@ -107,10 +108,10 @@ DEFINE_TEST(writing_cipher_to_file) {
         file.seekg(0, file.end);
         const size_t length = file.tellg();
         file.seekg(0, file.beg);
-        char* buff = new char[length];
-        file.read(buff, length);
-        cipher = cppblowfish::Buffer::from_whole_data(buff, length);
-        delete[] buff;
+        char* raw_buffer = new char[length];
+        file.read(raw_buffer, length);
+        cipher = cppblowfish::Buffer::from_whole_data(raw_buffer, length);
+        delete[] raw_buffer;
     }
 
     blowfish.decrypt(cipher, output);
@@ -161,10 +162,10 @@ DEFINE_TEST(bigger_data) {
         file.seekg(0, file.end);
         const size_t length = file.tellg();
         file.seekg(0, file.beg);
-        char* buff = new char[length];
-        file.read(buff, length);
-        input = cppblowfish::Buffer {buff, length};
-        delete[] buff;
+        char* raw_buffer = new char[length];
+        file.read(raw_buffer, length);
+        input = cppblowfish::Buffer(raw_buffer, length);
+        delete[] raw_buffer;
     }
 
     cppblowfish::Buffer cipher;
