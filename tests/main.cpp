@@ -12,7 +12,7 @@
 
 #include <cppblowfish/cppblowfish.hpp>
 
-#include "unit_test.h"
+#include "unit_test.hpp"
 
 DEFINE_TEST(basic_usage) {
     std::string key = "mySECRETkey1234";
@@ -106,7 +106,7 @@ DEFINE_TEST(writing_cipher_to_file) {
         std::ifstream file {"cipher.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         file.seekg(0, file.end);
-        const size_t length = file.tellg();
+        const std::size_t length = file.tellg();
         file.seekg(0, file.beg);
         char* raw_buffer = new char[length];
         file.read(raw_buffer, length);
@@ -134,7 +134,7 @@ DEFINE_TEST(writing_cipher_to_file) {
 }
 
 DEFINE_TEST(buffer) {
-    constexpr size_t size = 4;
+    constexpr std::size_t size = 4;
     char data[size] = { 'L', 'i', 'n', 'u' };
     cppblowfish::Buffer buffer {data, size};
 
@@ -160,7 +160,7 @@ DEFINE_TEST(bigger_data) {
         std::ifstream file {"shader.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         file.seekg(0, file.end);
-        const size_t length = file.tellg();
+        const std::size_t length = file.tellg();
         file.seekg(0, file.beg);
         char* raw_buffer = new char[length];
         file.read(raw_buffer, length);

@@ -25,14 +25,14 @@
 */
 
 namespace cppblowfish {
-    inline constexpr size_t BUFFER_OFFSET = sizeof(size_t);  // Padding size
+    inline constexpr std::size_t BUFFER_OFFSET = sizeof(std::size_t);  // Padding size
 
     namespace internal {
         struct Uint32 {
             unsigned char data[4];
         };
 
-        Uint32 repr_uint32(uint32_t x);
+        Uint32 repr_uint32(std::uint32_t x);
     }
 
     class Buffer {
@@ -40,8 +40,8 @@ namespace cppblowfish {
         // Allocations can throw exceptions (std::bad_alloc)
 
         Buffer();  // Allocate nothing but padding size
-        Buffer(size_t size);  // Allocate with reserved size
-        Buffer(const void* data, size_t size);  // Allocate with data
+        Buffer(std::size_t size);  // Allocate with reserved size
+        Buffer(const void* data, std::size_t size);  // Allocate with data
         ~Buffer();
 
         Buffer(const Buffer& other);
@@ -58,29 +58,29 @@ namespace cppblowfish {
         unsigned char* steal();
 
         // Actual data size
-        size_t size() const { return buffer_data_and_padding - buffer_padding; }
+        std::size_t size() const { return buffer_data_and_padding - buffer_padding; }
 
-        size_t padding() const { return buffer_padding; }
+        std::size_t padding() const { return buffer_padding; }
 
         // Allocate or reallocate that amount of bytes (actual data + padding); it must at least as before
-        void reserve(size_t size);
+        void reserve(std::size_t size);
 
         // Create a new buffer from a previous buffer's whole data (write_whole_data())
-        static Buffer from_whole_data(const void* whole_data, size_t whole_size);
+        static Buffer from_whole_data(const void* whole_data, std::size_t whole_size);
 
         // Writes all the data (padding size + data + padding); not the additional allocated memory
         void write_whole_data(std::ostream& stream) const;
         void write_whole_data(unsigned char* out) const;  // out is a pointer to a buffer allocated by you
                                                           // and should have the size as size() + padding() + BUFFER_OFFSET
     private:
-        void padd(size_t padd_count, unsigned char character);
-        static void write_to_stream(std::ostream& stream, size_t size, const unsigned char* data);
+        void padd(std::size_t padd_count, unsigned char character);
+        static void write_to_stream(std::ostream& stream, std::size_t size, const unsigned char* data);
 
         unsigned char* data = nullptr;
 
-        size_t capacity = 0;  // The number of bytes allocated (padding size + buffer data padding + unused bytes)
-        size_t buffer_padding = 0;  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
-        size_t buffer_data_and_padding = 0;  // The size in bytes of the actual data + the actual padding
+        std::size_t capacity = 0;  // The number of bytes allocated (padding size + buffer data padding + unused bytes)
+        std::size_t buffer_padding = 0;  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
+        std::size_t buffer_data_and_padding = 0;  // The size in bytes of the actual data + the actual padding
 
         friend class BlowfishContext;
         friend std::ostream& operator<<(std::ostream& stream, const Buffer& buffer);

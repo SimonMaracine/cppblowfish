@@ -1,4 +1,4 @@
-// This is just a convenience header
+// This is just a convenience header; you can include headers from details too
 
 #ifndef CPPBLOWFISH_H
 #define CPPBLOWFISH_H

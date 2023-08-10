@@ -109,7 +109,7 @@ cppblowfish::Buffer cipher2;
     if (!file.is_open()) { std::exit(1); }
 
     file.seekg(0, file.end);
-    const size_t length = file.tellg();
+    const std::size_t length = file.tellg();
     file.seekg(0, file.beg);
 
     char* raw_buffer = new char[length];

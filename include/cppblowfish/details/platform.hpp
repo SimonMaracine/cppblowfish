@@ -11,8 +11,8 @@
 #endif
 
 inline bool is_little_endian() {
-    volatile const uint32_t whatever = 0b0001;
-    return reinterpret_cast<volatile const uint8_t*>(&whatever)[0] == 1;
+    volatile const std::uint32_t whatever = 0b0001;
+    return reinterpret_cast<volatile const std::uint8_t*>(&whatever)[0] == 1;
 }
 
 #endif  // PLATFORM_H
