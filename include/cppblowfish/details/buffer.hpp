@@ -62,13 +62,13 @@ namespace cppblowfish {
 
         std::size_t padding() const { return buffer_padding; }
 
-        // Allocate or reallocate that amount of bytes (actual data + padding); it must at least as before
+        // Allocate or reallocate that amount of bytes (actual data + padding); it must be at least as before
         void reserve(std::size_t size);
 
         // Create a new buffer from a previous buffer's whole data (write_whole_data())
         static Buffer from_whole_data(const void* whole_data, std::size_t whole_size);
 
-        // Writes all the data (padding size + data + padding); not the additional allocated memory
+        // Writes all the data (padding size + data + padding); without the additional allocated memory
         void write_whole_data(std::ostream& stream) const;
         void write_whole_data(unsigned char* out) const;  // out is a pointer to a buffer allocated by you
                                                           // and should have the size as size() + padding() + BUFFER_OFFSET
@@ -78,7 +78,7 @@ namespace cppblowfish {
 
         unsigned char* data = nullptr;
 
-        std::size_t capacity = 0;  // The number of bytes allocated (padding size + buffer data padding + unused bytes)
+        std::size_t capacity = 0;  // The number of bytes allocated (padding size + buffer data + padding bytes + unused bytes)
         std::size_t buffer_padding = 0;  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
         std::size_t buffer_data_and_padding = 0;  // The size in bytes of the actual data + the actual padding
 
