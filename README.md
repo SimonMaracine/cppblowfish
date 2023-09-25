@@ -66,7 +66,7 @@ std::cout << "output size: " << output.size() << '\n';
 unsigned char* data = new unsigned char[output.size()];
 std::memcpy(data, output.get(), output.size());
 
-// Or steal the data
+// Or take ownership of the data
 // unsigned char* data = output.steal();
 ```
 
@@ -127,6 +127,6 @@ blowfish.decrypt(cipher2, output);
 unsigned char* data = new unsigned char[output.size()];
 std::memcpy(data, output.get(), output.size());
 
-// Or steal the data
+// Or take ownership of the data
 // unsigned char* data = output.steal();
 ```
