@@ -11,10 +11,8 @@ namespace cppblowfish {
     class BlowfishContext {
     public:
         BlowfishContext() = default;
-
-        // Constructors (and initialize) can throw exceptions: AlreadyInitializedError and KeyError
         explicit BlowfishContext(const std::string& key);
-        explicit BlowfishContext(const void* key, std::size_t size);
+        explicit BlowfishContext(const char* key, std::size_t size);
 
         ~BlowfishContext() = default;
 
@@ -24,7 +22,9 @@ namespace cppblowfish {
         BlowfishContext& operator=(BlowfishContext&&) noexcept = default;
 
         // Initialize the context, if before it was default constructed
-        void initialize(const void* key, std::size_t size);
+        // The key must be between 32 and 448 bits (4 and 56 bytes respectively)
+        // To change the key for an already initialized context, create an another context
+        void initialize(const char* key, std::size_t size);
 
         // Usual encryption-decryption
         void encrypt(const Buffer& input, Buffer& cipher);
@@ -34,7 +34,7 @@ namespace cppblowfish {
         void encrypt_data(std::uint32_t* left, std::uint32_t* right);
         void decrypt_data(std::uint32_t* left, std::uint32_t* right);
     private:
-        std::uint32_t f(std::uint32_t x) noexcept;
+        std::uint32_t f(std::uint32_t x);
 
         std::uint32_t P_array[18];
         std::uint32_t S_boxes[4][256];

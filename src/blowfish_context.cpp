@@ -1,20 +1,17 @@
 #include <string>
+#include <cstdint>
+#include <cstddef>
 #include <algorithm>
 #include <utility>
 #include <cstring>
 #include <cassert>
-#include <cstdint>
-#include <cstddef>
 
 #include "cppblowfish/details/blowfish_context.hpp"
 #include "cppblowfish/details/buffer.hpp"
-#include "cppblowfish/details/errors.hpp"
-
 #include "cppblowfish/details/platform.hpp"
 
 static constexpr std::size_t MIN_BYTES = 4;  // 32
 static constexpr std::size_t MAX_BYTES = 56;  // 448
-static const char* KEY_ERROR_MESSAGE = "Key must be between 32 bits and 448 bits (4 and 56 bytes respectively)";
 
 static constexpr std::size_t P_SIZE = 18;
 static constexpr std::size_t S_COUNT = 4;
@@ -247,32 +244,22 @@ static const std::uint32_t S_original[S_COUNT][S_SIZE] = {
 
 namespace cppblowfish {
     BlowfishContext::BlowfishContext(const std::string& key) {
-        if (key.size() < MIN_BYTES || key.size() > MAX_BYTES) {
-            throw KeyError(KEY_ERROR_MESSAGE);
-        }
+        assert(key.size() >= MIN_BYTES && key.size() <= MAX_BYTES);
 
         initialize(key.data(), key.size());
     }
 
-    BlowfishContext::BlowfishContext(const void* key, std::size_t size) {
-        if (size < MIN_BYTES || size > MAX_BYTES) {
-            throw KeyError(KEY_ERROR_MESSAGE);
-        }
+    BlowfishContext::BlowfishContext(const char* key, std::size_t size) {
+        assert(size >= MIN_BYTES && size <= MAX_BYTES);
 
         initialize(key, size);
     }
 
-    void BlowfishContext::initialize(const void* key, std::size_t size) {
+    void BlowfishContext::initialize(const char* key, std::size_t size) {
         assert(key != nullptr);
         assert(size > 0);
-
         assert(is_little_endian());
-
-        if (initialized) {
-            throw AlreadyInitializedError(
-                "Context has already been initialized; to change the key, create another context"
-            );
-        }
+        assert(!initialized);
 
         // Set flag here, because encrypt_data() is called
         initialized = true;
@@ -284,7 +271,7 @@ namespace cppblowfish {
             std::uint32_t k = 0;
 
             for (std::size_t j = 0; j < S_COUNT; j++) {
-                k = (k << 8) | static_cast<const std::uint8_t*>(key)[p];
+                k = (k << 8) | key[p];
                 p = (p + 1) % size;
             }
 
@@ -392,7 +379,7 @@ namespace cppblowfish {
         *left = *left ^ P_array[0];
     }
 
-    std::uint32_t BlowfishContext::f(std::uint32_t x) noexcept {
+    std::uint32_t BlowfishContext::f(std::uint32_t x) {
         std::uint32_t a, b, c, d;
         std::uint32_t result;
 
