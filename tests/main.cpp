@@ -134,7 +134,7 @@ DEFINE_TEST(writing_cipher_to_file) {
 }
 
 DEFINE_TEST(buffer) {
-    constexpr std::size_t size = 4;
+    static constexpr std::size_t size = 4;
     char data[size] = { 'L', 'i', 'n', 'u' };
     cppblowfish::Buffer buffer {data, size};
 

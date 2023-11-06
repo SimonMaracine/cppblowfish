@@ -1,8 +1,8 @@
 #include <ostream>
 #include <cstdint>
-#include <cassert>
-#include <cstring>
 #include <cstddef>
+#include <cstring>
+#include <cassert>
 
 #include "cppblowfish/details/buffer.hpp"
 
@@ -147,8 +147,6 @@ namespace cppblowfish {
         assert(whole_size >= BUFFER_OFFSET);
 
         Buffer buffer {whole_size - BUFFER_OFFSET};
-
-        // buffer.data = new unsigned char[whole_size];
 
         std::memcpy(buffer.data, whole_data, whole_size);
         buffer.capacity = whole_size;

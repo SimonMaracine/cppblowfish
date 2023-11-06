@@ -25,6 +25,8 @@
 */
 
 namespace cppblowfish {
+    class BlowfishContext;
+
     inline constexpr std::size_t BUFFER_OFFSET = sizeof(std::size_t);  // Padding size
 
     namespace internal {
