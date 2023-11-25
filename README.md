@@ -3,7 +3,7 @@
 ## A small C++ encryption library implementing the blowfish algorithm
 
 I built this library for myself. If it works for me, then maybe it works for you as well. I tested
-it on `GCC 13` and `MSVC 19.34`. It requires at least `C++ 17`.
+it on `GCC 13` and `MSVC 19.34`. It requires at least `C++17`.
 
 Check the header files for _some_ documentation. And check out `tests/main.cpp` for a working
 example.
@@ -86,7 +86,7 @@ blowfish.encrypt(input, cipher);
 
 // Write cipher to file
 {
-    std::ofstream file {"cipher.txt", std::ios::binary | std::ios::trunc};
+    std::ofstream file {"cipher.txt", std::ios::binary};
     if (!file.is_open()) { std::exit(1); }
 
     // Write **all** the contents of the buffer into the file
@@ -109,16 +109,16 @@ cppblowfish::Buffer cipher2;
     if (!file.is_open()) { std::exit(1); }
 
     file.seekg(0, file.end);
-    const std::size_t length = file.tellg();
+    const auto length = file.tellg();
     file.seekg(0, file.beg);
 
-    char* raw_buffer = new char[length];
-    file.read(raw_buffer, length);
+    char* raw_data = new char[length];
+    file.read(raw_data, length);
 
     // Create a new buffer from **all** the contents of a previous buffer
-    cipher2 = cppblowfish::Buffer::from_whole_data(raw_buffer, length);
+    cipher2 = cppblowfish::Buffer::read_whole_data(raw_data, length);
 
-    delete[] raw_buffer;
+    delete[] raw_data;
 }
 
 blowfish.decrypt(cipher2, output);

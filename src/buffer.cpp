@@ -142,7 +142,7 @@ namespace cppblowfish {
         capacity = size + BUFFER_OFFSET;
     }
 
-    Buffer Buffer::from_whole_data(const void* whole_data, std::size_t whole_size) {
+    Buffer Buffer::read_whole_data(const void* whole_data, std::size_t whole_size) {
         assert(whole_data != nullptr);
         assert(whole_size >= BUFFER_OFFSET);
 

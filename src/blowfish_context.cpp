@@ -10,8 +10,8 @@
 #include "cppblowfish/details/buffer.hpp"
 #include "cppblowfish/details/platform.hpp"
 
-static constexpr std::size_t MIN_BYTES = 4;  // 32
-static constexpr std::size_t MAX_BYTES = 56;  // 448
+static constexpr std::size_t MIN_BYTES = 4;  // 32 bits
+static constexpr std::size_t MAX_BYTES = 56;  // 448 bits
 
 static constexpr std::size_t P_SIZE = 18;
 static constexpr std::size_t S_COUNT = 4;
@@ -246,7 +246,7 @@ namespace cppblowfish {
     BlowfishContext::BlowfishContext(const std::string& key) {
         assert(key.size() >= MIN_BYTES && key.size() <= MAX_BYTES);
 
-        initialize(key.data(), key.size());
+        initialize(key.c_str(), key.size());
     }
 
     BlowfishContext::BlowfishContext(const char* key, std::size_t size) {

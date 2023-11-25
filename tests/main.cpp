@@ -97,7 +97,7 @@ DEFINE_TEST(writing_cipher_to_file) {
     ASSERT_EQ(cipher.padding(), 8)
 
     {
-        std::ofstream file {"cipher.txt", std::ios::binary | std::ios::trunc};
+        std::ofstream file {"cipher.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         cipher.write_whole_data(file);
     }
@@ -106,12 +106,12 @@ DEFINE_TEST(writing_cipher_to_file) {
         std::ifstream file {"cipher.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         file.seekg(0, file.end);
-        const std::size_t length = file.tellg();
+        const auto length = file.tellg();
         file.seekg(0, file.beg);
-        char* raw_buffer = new char[length];
-        file.read(raw_buffer, length);
-        cipher = cppblowfish::Buffer::from_whole_data(raw_buffer, length);
-        delete[] raw_buffer;
+        char* raw_data = new char[length];
+        file.read(raw_data, length);
+        cipher = cppblowfish::Buffer::read_whole_data(raw_data, length);
+        delete[] raw_data;
     }
 
     blowfish.decrypt(cipher, output);
@@ -135,7 +135,7 @@ DEFINE_TEST(writing_cipher_to_file) {
 
 DEFINE_TEST(buffer) {
     static constexpr std::size_t size = 4;
-    char data[size] = { 'L', 'i', 'n', 'u' };
+    const char data[size] = { 'L', 'i', 'n', 'u' };
     cppblowfish::Buffer buffer {data, size};
 
     ASSERT_EQ(std::memcmp(buffer.get(), data, size), 0)
@@ -160,12 +160,12 @@ DEFINE_TEST(bigger_data) {
         std::ifstream file {"shader.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         file.seekg(0, file.end);
-        const std::size_t length = file.tellg();
+        const auto length = file.tellg();
         file.seekg(0, file.beg);
-        char* raw_buffer = new char[length];
-        file.read(raw_buffer, length);
-        input = cppblowfish::Buffer(raw_buffer, length);
-        delete[] raw_buffer;
+        char* raw_data = new char[length];
+        file.read(raw_data, length);
+        input = cppblowfish::Buffer(raw_data, length);
+        delete[] raw_data;
     }
 
     cppblowfish::Buffer cipher;

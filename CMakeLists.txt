@@ -4,18 +4,18 @@ option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside the library" 
 option(BUILD_SHARED_LIBS "Build the library as static or dynamic" OFF)
 
 project("cppblowfish"
-    VERSION 0.10.0
+    VERSION 0.11.0
     LANGUAGES CXX
 )
 
 add_library(cppblowfish
-    "src/blowfish_context.cpp"
-    "src/buffer.cpp"
     "include/cppblowfish/details/blowfish_context.hpp"
     "include/cppblowfish/details/buffer.hpp"
     "include/cppblowfish/details/platform.hpp"
     "include/cppblowfish/details/version.hpp"
     "include/cppblowfish/cppblowfish.hpp"
+    "src/blowfish_context.cpp"
+    "src/buffer.cpp"
 )
 
 if(UNIX)

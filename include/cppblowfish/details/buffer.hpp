@@ -68,7 +68,7 @@ namespace cppblowfish {
         void reserve(std::size_t size);
 
         // Create a new buffer from a previous buffer's whole data (write_whole_data())
-        static Buffer from_whole_data(const void* whole_data, std::size_t whole_size);
+        static Buffer read_whole_data(const void* whole_data, std::size_t whole_size);
 
         // Writes all the data (padding size + data + padding); not the additional allocated memory
         void write_whole_data(std::ostream& stream) const;
