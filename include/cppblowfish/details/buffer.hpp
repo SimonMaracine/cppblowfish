@@ -31,7 +31,7 @@ namespace cppblowfish {
 
     namespace internal {
         struct Uint32 {
-            unsigned char data[4];
+            unsigned char data[4] {};
         };
 
         Uint32 repr_uint32(std::uint32_t x);
@@ -78,11 +78,11 @@ namespace cppblowfish {
         void padd(std::size_t padd_count, unsigned char character);
         static void write_to_stream(std::ostream& stream, std::size_t size, const unsigned char* data);
 
-        unsigned char* data = nullptr;
+        unsigned char* data {nullptr};
 
-        std::size_t capacity = 0;  // The number of bytes allocated (padding size + buffer data + padding bytes + unused bytes)
-        std::size_t buffer_padding = 0;  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
-        std::size_t buffer_data_and_padding = 0;  // The size in bytes of the actual data + the actual padding
+        std::size_t capacity {0};  // The number of bytes allocated (padding size + buffer data + padding bytes + unused bytes)
+        std::size_t buffer_padding {0};  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
+        std::size_t buffer_data_and_padding {0};  // The size in bytes of the actual data + the actual padding
 
         friend class BlowfishContext;
         friend std::ostream& operator<<(std::ostream& stream, const Buffer& buffer);

@@ -15,8 +15,8 @@
 #include "unit_test.hpp"
 
 DEFINE_TEST(basic_usage) {
-    std::string key = "mySECRETkey1234";
-    std::string message = "Hello, world. Why are you sad?";
+    std::string key {"mySECRETkey1234"};
+    std::string message {"Hello, world. Why are you sad?"};
 
     cppblowfish::BlowfishContext blowfish {key};
 
@@ -67,8 +67,8 @@ DEFINE_TEST(basic_usage) {
 }
 
 DEFINE_TEST(writing_cipher_to_file) {
-    std::string key = "ThisIsMyKey19S";
-    std::string message = "And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works.";
+    std::string key {"ThisIsMyKey19S"};
+    std::string message {"And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works."};
 
     cppblowfish::BlowfishContext blowfish {key};
 
@@ -106,9 +106,9 @@ DEFINE_TEST(writing_cipher_to_file) {
         std::ifstream file {"cipher.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         file.seekg(0, file.end);
-        const auto length = file.tellg();
+        const auto length {file.tellg()};
         file.seekg(0, file.beg);
-        char* raw_data = new char[length];
+        char* raw_data {new char[length]};
         file.read(raw_data, length);
         cipher = cppblowfish::Buffer::read_whole_data(raw_data, length);
         delete[] raw_data;
@@ -134,8 +134,8 @@ DEFINE_TEST(writing_cipher_to_file) {
 }
 
 DEFINE_TEST(buffer) {
-    static constexpr std::size_t size = 4;
-    const char data[size] = { 'L', 'i', 'n', 'u' };
+    static constexpr std::size_t size {4};
+    const char data[size] { 'L', 'i', 'n', 'u' };
     cppblowfish::Buffer buffer {data, size};
 
     ASSERT_EQ(std::memcmp(buffer.get(), data, size), 0)
@@ -150,7 +150,7 @@ DEFINE_TEST(buffer) {
 }
 
 DEFINE_TEST(bigger_data) {
-    std::string key = "some_random_not_great_key";
+    std::string key {"some_random_not_great_key"};
 
     cppblowfish::BlowfishContext blowfish {key};
 
@@ -160,9 +160,9 @@ DEFINE_TEST(bigger_data) {
         std::ifstream file {"shader.txt", std::ios::binary};
         if (!file.is_open()) { ASSERT(false) }
         file.seekg(0, file.end);
-        const auto length = file.tellg();
+        const auto length {file.tellg()};
         file.seekg(0, file.beg);
-        char* raw_data = new char[length];
+        char* raw_data {new char[length]};
         file.read(raw_data, length);
         input = cppblowfish::Buffer(raw_data, length);
         delete[] raw_data;
@@ -186,8 +186,8 @@ int main() {
     TEST(bigger_data)
     END_UNIT_TEST()
 
-    std::string key = "mySECRETkey1234";
-    std::string message = "Hello, world. Why are you sad?";
+    std::string key {"mySECRETkey1234"};
+    std::string message {"Hello, world. Why are you sad?"};
 
     cppblowfish::BlowfishContext blowfish {key};
 

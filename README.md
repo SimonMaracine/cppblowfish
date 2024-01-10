@@ -3,7 +3,7 @@
 ## A small C++ encryption library implementing the blowfish algorithm
 
 I built this library for myself. If it works for me, then maybe it works for you as well. I tested
-it on `GCC 13` and `MSVC 19.34`. It requires at least `C++17`.
+it on `GCC 13.2` and `MSVC 19.34`. It requires at least `C++17`.
 
 Check the header files for _some_ documentation. And check out `tests/main.cpp` for a working
 example.
@@ -37,8 +37,8 @@ If you have any suggestions for improvements, feel free to open up an issue.
 
 ```c++
 // Define the key and some arbitrary data
-std::string key = "mySECRETkey1234";
-std::string message = "Hello, world. Why are you sad?";
+std::string key {"mySECRETkey1234"};
+std::string message {"Hello, world. Why are you sad?"};
 
 // Create the context using the key
 cppblowfish::BlowfishContext blowfish {key};
@@ -63,18 +63,18 @@ std::cout << "output: " << output << '\n';
 std::cout << "output size: " << output.size() << '\n';
 
 // Copy the data and do whatever you want with it
-unsigned char* data = new unsigned char[output.size()];
+unsigned char* data {new unsigned char[output.size()]};
 std::memcpy(data, output.get(), output.size());
 
 // Or take ownership of the data
-// unsigned char* data = output.steal();
+// unsigned char* data {output.steal()};
 ```
 
 ## Writing cipher to file and reading back
 
 ```c++
-std::string key = "ThisIsMyKey19S";
-std::string message = "And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works.";
+std::string key {"ThisIsMyKey19S"};
+std::string message {"And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works."};
 
 cppblowfish::BlowfishContext blowfish {key};
 
@@ -93,9 +93,9 @@ blowfish.encrypt(input, cipher);
     cipher.write_whole_data(file);
 
     // Or write to a buffer created by you
-    // unsigned char* buffer = (
+    // unsigned char* buffer {
     //     new unsigned char[cipher.size() + cipher.padding() + cppblowfish::BUFFER_OFFSET]
-    // );
+    // };
     // cipher.write_whole_data(buffer);
 }
 
@@ -109,10 +109,10 @@ cppblowfish::Buffer cipher2;
     if (!file.is_open()) { std::exit(1); }
 
     file.seekg(0, file.end);
-    const auto length = file.tellg();
+    const auto length {file.tellg()};
     file.seekg(0, file.beg);
 
-    char* raw_data = new char[length];
+    char* raw_data {new char[length]};
     file.read(raw_data, length);
 
     // Create a new buffer from **all** the contents of a previous buffer
@@ -124,9 +124,9 @@ cppblowfish::Buffer cipher2;
 blowfish.decrypt(cipher2, output);
 
 // Copy the data and do whatever you want with it
-unsigned char* data = new unsigned char[output.size()];
+unsigned char* data {new unsigned char[output.size()]};
 std::memcpy(data, output.get(), output.size());
 
 // Or take ownership of the data
-// unsigned char* data = output.steal();
+// unsigned char* data {output.steal()};
 ```

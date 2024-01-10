@@ -1,25 +1,22 @@
-#include <string>
-#include <cstdint>
-#include <cstddef>
+#include "cppblowfish/details/blowfish_context.hpp"
+
 #include <algorithm>
 #include <utility>
 #include <cstring>
 #include <cassert>
 
-#include "cppblowfish/details/blowfish_context.hpp"
-#include "cppblowfish/details/buffer.hpp"
 #include "cppblowfish/details/platform.hpp"
 
-static constexpr std::size_t MIN_BYTES = 4;  // 32 bits
-static constexpr std::size_t MAX_BYTES = 56;  // 448 bits
+static constexpr std::size_t MIN_BYTES {4ul};  // 32 bits
+static constexpr std::size_t MAX_BYTES {56ul};  // 448 bits
 
-static constexpr std::size_t P_SIZE = 18;
-static constexpr std::size_t S_COUNT = 4;
-static constexpr std::size_t S_SIZE = 256;
-static constexpr std::size_t BLOCK = sizeof(std::uint64_t);
-static constexpr std::size_t HALF_BLOCK = BLOCK / 2;
+static constexpr std::size_t P_SIZE {18ul};
+static constexpr std::size_t S_COUNT {4ul};
+static constexpr std::size_t S_SIZE {256ul};
+static constexpr std::size_t BLOCK {sizeof(std::uint64_t)};
+static constexpr std::size_t HALF_BLOCK {BLOCK / 2ul};
 
-static const std::uint32_t P_original[P_SIZE] = {
+static const std::uint32_t P_original[P_SIZE] {
     0x243F6A88u, 0x85A308D3u, 0x13198A2Eu,
     0x03707344u, 0xA4093822u, 0x299F31D0u,
     0x082EFA98u, 0xEC4E6C89u, 0x452821E6u,
@@ -28,7 +25,7 @@ static const std::uint32_t P_original[P_SIZE] = {
     0xB5470917u, 0x9216D5D9u, 0x8979FB1Bu
 };
 
-static const std::uint32_t S_original[S_COUNT][S_SIZE] = {
+static const std::uint32_t S_original[S_COUNT][S_SIZE] {
     { 0xD1310BA6u, 0x98DFB5ACu, 0x2FFD72DBu, 0xD01ADFB7u, 0xB8E1AFEDu,
       0x6A267E96u, 0xBA7C9045u, 0xF12C7F99u, 0x24A19947u, 0xB3916CF7u,
       0x0801F2E2u, 0x858EFC16u, 0x636920D8u, 0x71574E69u, 0xA458FEA3u,
@@ -267,10 +264,10 @@ namespace cppblowfish {
         std::memcpy(P_array, P_original, sizeof(std::uint32_t) * P_SIZE);
         std::memcpy(S_boxes, S_original, sizeof(std::uint32_t) * S_COUNT * S_SIZE);
 
-        for (std::size_t i = 0, p = 0; i < P_SIZE; i++) {
-            std::uint32_t k = 0;
+        for (std::size_t i {0}, p {0}; i < P_SIZE; i++) {
+            std::uint32_t k {0};
 
-            for (std::size_t j = 0; j < S_COUNT; j++) {
+            for (std::size_t j {0}; j < S_COUNT; j++) {
                 k = (k << 8) | key[p];
                 p = (p + 1) % size;
             }
@@ -278,17 +275,17 @@ namespace cppblowfish {
             P_array[i] ^= k;
         }
 
-        std::uint32_t left = 0;
-        std::uint32_t right = 0;
+        std::uint32_t left {0};
+        std::uint32_t right {0};
 
-        for (std::size_t i = 0; i < P_SIZE; i += 2) {
+        for (std::size_t i {0}; i < P_SIZE; i += 2) {
             encrypt_data(&left, &right);
             P_array[i] = left;
             P_array[i + 1] = right;
         }
 
-        for (std::size_t i = 0; i < S_COUNT; i++) {
-            for (std::size_t j = 0; j < S_SIZE; j += 2) {
+        for (std::size_t i {0}; i < S_COUNT; i++) {
+            for (std::size_t j {0}; j < S_SIZE; j += 2) {
                 encrypt_data(&left, &right);
                 S_boxes[i][j] = left;
                 S_boxes[i][j + 1] = right;
@@ -301,15 +298,15 @@ namespace cppblowfish {
 
         Buffer result;
 
-        const std::size_t size = input.size();
-        const std::size_t padding = (size / BLOCK + 1) * BLOCK - size;  // This adds a redundant 8 bytes of padding, if size % 8 == 0
+        const std::size_t size {input.size()};
+        const std::size_t padding {(size / BLOCK + 1) * BLOCK - size};  // This adds a redundant 8 bytes of padding, if size % 8 == 0
 
-        Buffer input_padded = input;
+        Buffer input_padded {input};
         input_padded.padd(padding, '\0');
 
         result.reserve(size + padding);
 
-        for (std::size_t i = 0; i < input_padded.size() + input_padded.padding(); i += BLOCK) {
+        for (std::size_t i {0}; i < input_padded.size() + input_padded.padding(); i += BLOCK) {
             std::uint32_t left, right;
 
             std::memcpy(&left, input_padded.get() + i, sizeof(std::uint32_t));
@@ -333,7 +330,7 @@ namespace cppblowfish {
         Buffer result;
         result.reserve(cipher.size() + cipher.padding());
 
-        for (std::size_t i = 0; i < cipher.size() + cipher.padding(); i += BLOCK) {
+        for (std::size_t i {0}; i < cipher.size() + cipher.padding(); i += BLOCK) {
             std::uint32_t left, right;
 
             std::memcpy(&left, cipher.get() + i, sizeof(std::uint32_t));
@@ -354,7 +351,7 @@ namespace cppblowfish {
     void BlowfishContext::encrypt_data(std::uint32_t* left, std::uint32_t* right) {
         assert(initialized);
 
-        for (std::size_t r = 0; r < 16; r++) {
+        for (std::size_t r {0}; r < 16; r++) {
             *left = *left ^ P_array[r];
             *right = f(*left) ^ *right;
             std::swap(*left, *right);
@@ -368,7 +365,7 @@ namespace cppblowfish {
     void BlowfishContext::decrypt_data(std::uint32_t* left, std::uint32_t* right) {
         assert(initialized);
 
-        for (std::size_t r = 17; r > 1; r--) {
+        for (std::size_t r {17}; r > 1; r--) {
             *left = *left ^ P_array[r];
             *right = f(*left) ^ *right;
             std::swap(*left, *right);
@@ -384,11 +381,11 @@ namespace cppblowfish {
         std::uint32_t result;
 
         d = x & 0xFF;
-        x >>= 8;
+        x >>= 8u;
         c = x & 0xFF;
-        x >>= 8;
+        x >>= 8u;
         b = x & 0xFF;
-        x >>= 8;
+        x >>= 8u;
         a = x & 0xFF;
         result = S_boxes[0][a] + S_boxes[1][b];
         result = result ^ S_boxes[2][c];

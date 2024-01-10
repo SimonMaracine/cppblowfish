@@ -3,10 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside the library" OFF)
 option(BUILD_SHARED_LIBS "Build the library as static or dynamic" OFF)
 
-project("cppblowfish"
-    VERSION 0.11.0
-    LANGUAGES CXX
-)
+project("cppblowfish" LANGUAGES CXX)
 
 add_library(cppblowfish
     "include/cppblowfish/details/blowfish_context.hpp"

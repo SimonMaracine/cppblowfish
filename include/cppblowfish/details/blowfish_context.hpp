@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <cstddef>
 
-namespace cppblowfish {
-    class Buffer;
+#include "cppblowfish/details/buffer.hpp"
 
+namespace cppblowfish {
     class BlowfishContext {
     public:
         BlowfishContext() = default;
@@ -36,9 +36,9 @@ namespace cppblowfish {
     private:
         std::uint32_t f(std::uint32_t x);
 
-        std::uint32_t P_array[18];
-        std::uint32_t S_boxes[4][256];
-        bool initialized = false;
+        std::uint32_t P_array[18] {};
+        std::uint32_t S_boxes[4][256] {};
+        bool initialized {false};
     };
 }
 

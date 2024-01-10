@@ -1,18 +1,15 @@
-#include <ostream>
-#include <cstdint>
-#include <cstddef>
+#include "cppblowfish/details/buffer.hpp"
+
 #include <cstring>
 #include <cassert>
-
-#include "cppblowfish/details/buffer.hpp"
 
 namespace cppblowfish {
     namespace internal {
         Uint32 repr_uint32(std::uint32_t x) {
             Uint32 buffer;
 
-            for (std::size_t i = 0; i < 4; i++) {
-                buffer.data[i] = static_cast<unsigned char>(x >> i * 8);
+            for (std::size_t i {0u}; i < 4u; i++) {
+                buffer.data[i] = static_cast<unsigned char>(x >> i * 8u);
             }
 
             return buffer;
@@ -100,7 +97,7 @@ namespace cppblowfish {
     }
 
     Buffer& Buffer::operator+=(internal::Uint32 uint32) {
-        static constexpr std::size_t additional = sizeof(internal::Uint32);
+        static constexpr std::size_t additional {sizeof(internal::Uint32)};
 
         if (buffer_data_and_padding + BUFFER_OFFSET + additional > capacity) {
             reserve(buffer_data_and_padding + additional);
@@ -119,7 +116,7 @@ namespace cppblowfish {
     }
 
     unsigned char* Buffer::steal() {
-        unsigned char* pointer = data + BUFFER_OFFSET;
+        unsigned char* pointer {data + BUFFER_OFFSET};
 
         // Reset only the pointer, the other member data remain intact
         data = nullptr;
@@ -130,7 +127,7 @@ namespace cppblowfish {
     void Buffer::reserve(std::size_t size) {
         assert(size > buffer_data_and_padding);
 
-        unsigned char* new_data = new unsigned char[size + BUFFER_OFFSET];
+        unsigned char* new_data {new unsigned char[size + BUFFER_OFFSET]};
 
         if (data != nullptr) {
             std::memcpy(new_data, data, buffer_data_and_padding + BUFFER_OFFSET);
@@ -173,7 +170,7 @@ namespace cppblowfish {
             reserve(buffer_data_and_padding + padd_count);
         }
 
-        for (std::size_t i = 0; i < padd_count; i++) {
+        for (std::size_t i {0}; i < padd_count; i++) {
             data[buffer_data_and_padding + i + BUFFER_OFFSET] = character;
         }
 

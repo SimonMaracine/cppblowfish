@@ -5,8 +5,6 @@
 
 class UnitTestContext {
 public:
-    UnitTestContext() = default;
-
     void add_test() {
         test_results.push_back(true);
     }
@@ -20,8 +18,8 @@ public:
     }
 
     void print_results() {
-        unsigned int passed = 0;
-        unsigned int failed = 0;
+        unsigned int passed {0};
+        unsigned int failed {0};
 
         for (bool result : test_results) {
             if (result) {
@@ -39,7 +37,7 @@ private:
 };
 
 #define INITIALIZE_UNIT_TEST() \
-    UnitTestContext* unit_test_context = new UnitTestContext;
+    UnitTestContext* unit_test_context {new UnitTestContext};
 
 #define DEFINE_TEST(name) \
     void name(UnitTestContext* unit_test_context)
