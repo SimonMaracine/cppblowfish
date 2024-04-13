@@ -9,7 +9,7 @@ if(UNIX)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(test PRIVATE "/W3")
 else()
-    message(WARNING "Compiler is not MSVC or platform is not supported; warnings are not enabled")
+    message(WARNING "Warnings are not enabled")
 endif()
 
 target_compile_features(test PRIVATE cxx_std_17)

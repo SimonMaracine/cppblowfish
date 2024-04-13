@@ -12,14 +12,7 @@ namespace cppblowfish {
     public:
         BlowfishContext() = default;
         explicit BlowfishContext(const std::string& key);
-        explicit BlowfishContext(const char* key, std::size_t size);
-
-        ~BlowfishContext() = default;
-
-        BlowfishContext(const BlowfishContext&) = default;
-        BlowfishContext& operator=(const BlowfishContext&) = default;
-        BlowfishContext(BlowfishContext&&) noexcept = default;
-        BlowfishContext& operator=(BlowfishContext&&) noexcept = default;
+        BlowfishContext(const char* key, std::size_t size);
 
         // Initialize the context, if before it was default constructed
         // The key must be between 32 and 448 bits (4 and 56 bytes respectively)
@@ -36,8 +29,8 @@ namespace cppblowfish {
     private:
         std::uint32_t f(std::uint32_t x);
 
-        std::uint32_t P_array[18] {};
-        std::uint32_t S_boxes[4][256] {};
+        std::uint32_t P_array[18u] {};
+        std::uint32_t S_boxes[4u][256u] {};
         bool initialized {false};
     };
 }

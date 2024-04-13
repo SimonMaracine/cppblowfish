@@ -2,20 +2,21 @@
 
 ## A small C++ encryption library implementing the blowfish algorithm
 
-I built this library for myself. If it works for me, then maybe it works for you as well. I tested
-it on `GCC 13.2` and `MSVC 19.34`. It requires at least `C++17`.
+I built this library for myself. Note that it's not meant to be used in production environments where
+absolute security is critical. It's more of a toy for hobbyists like me to play with. I tested it on
+`GCC 13.2` and `MSVC 19.34`. It requires at least `C++17`.
 
 Check the header files for _some_ documentation. And check out `tests/main.cpp` for a working
 example.
 
 To use this library, just include this repository as a submodule like this:
 
-`git submodule add https://github.com/SimonMaracine/cppblowfish.git <path/to/submodule/folder>`
+`git submodule add https://github.com/SimonMaracine/cppblowfish.git <path/to/submodule>`
 
 Then write this in CMakeLists.txt:
 
 ```cmake
-add_subdirectory(<path/to/submodule/folder>)
+add_subdirectory(<path/to/submodule>)
 target_link_libraries(<your_target> PRIVATE cppblowfish)
 ```
 
@@ -30,8 +31,6 @@ The CMake script builds the library by default as static. If you want it dynamic
 ```cmake
 set(BUILD_SHARED_LIBS ON)
 ```
-
-If you have any suggestions for improvements, feel free to open up an issue.
 
 ## Basic usage
 
