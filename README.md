@@ -2,8 +2,8 @@
 
 ## A small C++ encryption library implementing the blowfish algorithm
 
-I built this library for myself. Note that it's not meant to be used in production environments where
-absolute security is critical. It's more of a toy for hobbyists like me to play with. I tested it on
+I built this library for myself. **Note that it's not meant to be used in production environments where
+security is critical.** It's more of a toy for hobbyists like me to play with. I tested it on
 `GCC 13.2` and `MSVC 19.34`. It requires at least `C++17`.
 
 Check the header files for _some_ documentation. And check out `tests/main.cpp` for a working
@@ -66,7 +66,9 @@ unsigned char* data {new unsigned char[output.size()]};
 std::memcpy(data, output.get(), output.size());
 
 // Or take ownership of the data
-// unsigned char* data {output.steal()};
+#if 0
+unsigned char* data {output.steal()};
+#endif
 ```
 
 ## Writing cipher to file and reading back
@@ -92,10 +94,12 @@ blowfish.encrypt(input, cipher);
     cipher.write_whole_data(file);
 
     // Or write to a buffer created by you
-    // unsigned char* buffer {
-    //     new unsigned char[cipher.size() + cipher.padding() + cppblowfish::BUFFER_OFFSET]
-    // };
-    // cipher.write_whole_data(buffer);
+#if 0
+    unsigned char* buffer {
+        new unsigned char[cipher.size() + cipher.padding() + cppblowfish::BUFFER_OFFSET]
+    };
+    cipher.write_whole_data(buffer);
+#endif
 }
 
 // Maybe do other stuff...
@@ -127,5 +131,7 @@ unsigned char* data {new unsigned char[output.size()]};
 std::memcpy(data, output.get(), output.size());
 
 // Or take ownership of the data
-// unsigned char* data {output.steal()};
+#if 0
+unsigned char* data {output.steal()};
+#endif
 ```

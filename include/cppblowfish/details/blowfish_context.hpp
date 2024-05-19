@@ -20,17 +20,17 @@ namespace cppblowfish {
         void initialize(const char* key, std::size_t size);
 
         // Usual encryption-decryption
-        void encrypt(const Buffer& input, Buffer& cipher);
-        void decrypt(const Buffer& cipher, Buffer& output);
+        void encrypt(const Buffer& input, Buffer& cipher) const;
+        void decrypt(const Buffer& cipher, Buffer& output) const;
 
         // Low level API
-        void encrypt_data(std::uint32_t* left, std::uint32_t* right);
-        void decrypt_data(std::uint32_t* left, std::uint32_t* right);
+        void encrypt_data(std::uint32_t* left, std::uint32_t* right) const;
+        void decrypt_data(std::uint32_t* left, std::uint32_t* right) const;
     private:
-        std::uint32_t f(std::uint32_t x);
+        std::uint32_t f(std::uint32_t x) const;
 
-        std::uint32_t P_array[18u] {};
-        std::uint32_t S_boxes[4u][256u] {};
+        std::uint32_t P_array[18] {};
+        std::uint32_t S_boxes[4][256] {};
         bool initialized {false};
     };
 }

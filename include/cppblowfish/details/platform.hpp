@@ -6,13 +6,13 @@
 #include <cstdint>
 
 // Support only 64-bit architectures
-#if SIZE_MAX != 0xFFFFFFFFFFFFFFFFul
+#if SIZE_MAX != 0xFFFFFFFFFFFFFFFF
     #error "Unsupported platform"
 #endif
 
 inline bool is_little_endian() {
-    volatile const std::uint32_t whatever = 0b0001u;
-    return reinterpret_cast<volatile const unsigned char*>(&whatever)[0u] == 1u;
+    const volatile std::uint32_t whatever {0b0001};
+    return reinterpret_cast<const volatile unsigned char*>(&whatever)[0] == 1;
 }
 
 #endif  // PLATFORM_H

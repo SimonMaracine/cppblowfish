@@ -30,7 +30,7 @@ public:
         }
 
         std::cout << passed << " test(s) passed, " << failed << " test(s) failed out of "
-                << test_results.size() << '\n';
+            << test_results.size() << '\n';
     }
 private:
     std::vector<bool> test_results;

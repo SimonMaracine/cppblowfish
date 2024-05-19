@@ -1,13 +1,2 @@
 build/
 .vscode/
-
-.vs/
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
-CMakeFiles/
-Debug/
-Release/
-cmake_install.cmake
-cppblowfish.dir/
-cppblowfish.sln

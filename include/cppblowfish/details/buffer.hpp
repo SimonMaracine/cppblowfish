@@ -27,11 +27,11 @@
 namespace cppblowfish {
     class BlowfishContext;
 
-    inline constexpr std::size_t BUFFER_OFFSET = sizeof(std::size_t);  // Padding size
+    inline constexpr std::size_t BUFFER_OFFSET {sizeof(std::size_t)};  // Padding size
 
     namespace internal {
         struct Uint32 {
-            unsigned char data[4u] {};
+            unsigned char data[4] {};
         };
 
         Uint32 repr_uint32(std::uint32_t x);
@@ -80,9 +80,9 @@ namespace cppblowfish {
 
         unsigned char* data {nullptr};
 
-        std::size_t capacity {0u};  // The number of bytes allocated (padding size + buffer data + padding bytes + unused bytes)
-        std::size_t buffer_padding {0u};  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
-        std::size_t buffer_data_and_padding {0u};  // The size in bytes of the actual data + the actual padding
+        std::size_t capacity {0};  // The number of bytes allocated (padding size + buffer data + padding bytes + unused bytes)
+        std::size_t buffer_padding {0};  // The size in bytes of the actual padding (also stored at the beginning of the buffer)
+        std::size_t buffer_data_and_padding {0};  // The size in bytes of the actual data + the actual padding
 
         friend class BlowfishContext;
         friend std::ostream& operator<<(std::ostream& stream, const Buffer& buffer);

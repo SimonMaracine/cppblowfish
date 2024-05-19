@@ -9,8 +9,8 @@ namespace cppblowfish {
         Uint32 repr_uint32(std::uint32_t x) {
             Uint32 buffer;
 
-            for (std::size_t i {0u}; i < 4u; i++) {
-                buffer.data[i] = static_cast<unsigned char>(x >> i * 8u);
+            for (std::size_t i {0}; i < 4; i++) {
+                buffer.data[i] = static_cast<unsigned char>(x >> i * 8);
             }
 
             return buffer;
@@ -19,16 +19,16 @@ namespace cppblowfish {
 
     Buffer::Buffer() {
         data = new unsigned char[BUFFER_OFFSET];
-        std::memset(data, 0u, BUFFER_OFFSET);
+        std::memset(data, 0, BUFFER_OFFSET);
         capacity = BUFFER_OFFSET;
     }
 
     Buffer::Buffer(std::size_t size) {
-        assert(size > 0u);
+        assert(size > 0);
 
         data = new unsigned char[size + BUFFER_OFFSET];
 
-        std::memset(data, 0u, BUFFER_OFFSET);
+        std::memset(data, 0, BUFFER_OFFSET);
 
         capacity = size + BUFFER_OFFSET;
         buffer_data_and_padding = size;
@@ -36,12 +36,12 @@ namespace cppblowfish {
 
     Buffer::Buffer(const void* data, std::size_t size) {
         assert(data != nullptr);
-        assert(size > 0u);
+        assert(size > 0);
 
         this->data = new unsigned char[size + BUFFER_OFFSET];
         std::memcpy(this->data + BUFFER_OFFSET, data, size);
 
-        std::memset(this->data, 0u, BUFFER_OFFSET);
+        std::memset(this->data, 0, BUFFER_OFFSET);
 
         capacity = size + BUFFER_OFFSET;
         buffer_data_and_padding = size;
@@ -165,13 +165,13 @@ namespace cppblowfish {
     }
 
     void Buffer::padd(std::size_t padd_count, unsigned char character) {
-        assert(padd_count > 0u);
+        assert(padd_count > 0);
 
         if (buffer_data_and_padding + padd_count + BUFFER_OFFSET > capacity) {
             reserve(buffer_data_and_padding + padd_count);
         }
 
-        for (std::size_t i {0u}; i < padd_count; i++) {
+        for (std::size_t i {0}; i < padd_count; i++) {
             data[buffer_data_and_padding + i + BUFFER_OFFSET] = character;
         }
 
@@ -181,7 +181,7 @@ namespace cppblowfish {
     }
 
     void Buffer::write_to_stream(std::ostream& stream, std::size_t size, const unsigned char* data) {
-        assert(size > 0u);
+        assert(size > 0);
         assert(data != nullptr);
 
         // This is safe

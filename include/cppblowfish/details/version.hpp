@@ -2,9 +2,9 @@
 #define VERSION_H
 
 namespace cppblowfish {
-    inline constexpr unsigned int VERSION_MAJOR = 0u;
-    inline constexpr unsigned int VERSION_MINOR = 11u;
-    inline constexpr unsigned int VERSION_PATCH = 2u;
+    inline constexpr unsigned int VERSION_MAJOR {0};
+    inline constexpr unsigned int VERSION_MINOR {11};
+    inline constexpr unsigned int VERSION_PATCH {2};
 }
 
 #endif  // VERSION_H
