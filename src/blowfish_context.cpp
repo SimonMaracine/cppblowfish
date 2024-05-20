@@ -239,11 +239,8 @@ static const std::uint32_t S_original[S_COUNT][S_SIZE] {
 };
 
 namespace cppblowfish {
-    BlowfishContext::BlowfishContext(const std::string& key) {
-        assert(key.size() >= MIN_BYTES && key.size() <= MAX_BYTES);
-
-        initialize(key.c_str(), key.size());
-    }
+    BlowfishContext::BlowfishContext(const std::string& key)
+        : BlowfishContext(key.c_str(), key.size()) {}
 
     BlowfishContext::BlowfishContext(const char* key, std::size_t size) {
         assert(size >= MIN_BYTES && size <= MAX_BYTES);
