@@ -18,7 +18,7 @@ DEFINE_TEST(basic_usage) {
     std::string key {"mySECRETkey1234"};
     std::string message {"Hello, world. Why are you sad?"};
 
-    cppblowfish::BlowfishContext blowfish {key};
+    const cppblowfish::BlowfishContext blowfish {key};
 
     cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;
@@ -70,7 +70,7 @@ DEFINE_TEST(writing_cipher_to_file) {
     std::string key {"ThisIsMyKey19S"};
     std::string message {"And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works."};
 
-    cppblowfish::BlowfishContext blowfish {key};
+    const cppblowfish::BlowfishContext blowfish {key};
 
     cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;
@@ -97,9 +97,9 @@ DEFINE_TEST(writing_cipher_to_file) {
     ASSERT_EQ(cipher.padding(), 8)
 
     {
-        std::ofstream file {"cipher.txt", std::ios::binary};
-        if (!file.is_open()) { ASSERT(false) }
-        cipher.write_whole_data(file);
+        std::ofstream stream {"cipher.txt", std::ios::binary};
+        if (!stream.is_open()) { ASSERT(false) }
+        cipher.write_whole_data(stream);
     }
 
     {
@@ -152,18 +152,18 @@ DEFINE_TEST(buffer) {
 DEFINE_TEST(bigger_data) {
     std::string key {"some_random_not_great_key"};
 
-    cppblowfish::BlowfishContext blowfish {key};
+    const cppblowfish::BlowfishContext blowfish {key};
 
     cppblowfish::Buffer input;
 
     {
-        std::ifstream file {"shader.txt", std::ios::binary};
-        if (!file.is_open()) { ASSERT(false) }
-        file.seekg(0, file.end);
-        const auto length {file.tellg()};
-        file.seekg(0, file.beg);
+        std::ifstream stream {"shader.txt", std::ios::binary};
+        if (!stream.is_open()) { ASSERT(false) }
+        stream.seekg(0, stream.end);
+        const auto length {stream.tellg()};
+        stream.seekg(0, stream.beg);
         char* raw_data {new char[length]};
-        file.read(raw_data, length);
+        stream.read(raw_data, length);
         input = cppblowfish::Buffer(raw_data, length);
         delete[] raw_data;
     }
@@ -189,7 +189,7 @@ int main() {
     std::string key {"mySECRETkey1234"};
     std::string message {"Hello, world. Why are you sad?"};
 
-    cppblowfish::BlowfishContext blowfish {key};
+    const cppblowfish::BlowfishContext blowfish {key};
 
     cppblowfish::Buffer input {message.c_str(), message.size()};
     cppblowfish::Buffer cipher;

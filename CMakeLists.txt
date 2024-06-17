@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 
+project("cppblowfish" LANGUAGES CXX)
+
 option(CPPBLOWFISH_BUILD_TESTS "Build a tests executable alongside the library" OFF)
 option(BUILD_SHARED_LIBS "Build the library as static or dynamic" OFF)
-
-project("cppblowfish" LANGUAGES CXX)
 
 add_library(cppblowfish
     "include/cppblowfish/details/blowfish_context.hpp"
@@ -17,7 +17,7 @@ add_library(cppblowfish
 
 if(UNIX)
     target_compile_options(cppblowfish PRIVATE "-Wall" "-Wextra" "-Wpedantic" "-Wconversion")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+elseif(MSVC)
     target_compile_options(cppblowfish PRIVATE "/W4")
 else()
     message(WARNING "Warnings are not enabled")

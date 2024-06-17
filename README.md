@@ -4,14 +4,16 @@
 
 I built this library for myself. **Note that it's not meant to be used in production environments where
 security is critical.** It's more of a toy for hobbyists like me to play with. I tested it on
-`GCC 13.2` and `MSVC 19.34`. It requires at least `C++17`.
+`GCC 13.2` and `MSVC 19.39`. It requires at least `C++17`.
 
 Check the header files for _some_ documentation. And check out `tests/main.cpp` for a working
 example.
 
+## Usage
+
 To use this library, just include this repository as a submodule like this:
 
-`git submodule add https://github.com/SimonMaracine/cppblowfish.git <path/to/submodule>`
+`git submodule add -b stable -- https://github.com/SimonMaracine/cppblowfish.git <path/to/submodule>`
 
 Then write this in CMakeLists.txt:
 
@@ -32,7 +34,7 @@ The CMake script builds the library by default as static. If you want it dynamic
 set(BUILD_SHARED_LIBS ON)
 ```
 
-## Basic usage
+## Basic example
 
 ```c++
 // Define the key and some arbitrary data
@@ -40,7 +42,7 @@ std::string key {"mySECRETkey1234"};
 std::string message {"Hello, world. Why are you sad?"};
 
 // Create the context using the key
-cppblowfish::BlowfishContext blowfish {key};
+const cppblowfish::BlowfishContext blowfish {key};
 
 // Define the buffers used
 cppblowfish::Buffer input {message.c_str(), message.size()};
@@ -77,7 +79,7 @@ unsigned char* data {output.steal()};
 std::string key {"ThisIsMyKey19S"};
 std::string message {"And this is a long message. Have a nice day!... Maybe it works. If you read this, then it works."};
 
-cppblowfish::BlowfishContext blowfish {key};
+const cppblowfish::BlowfishContext blowfish {key};
 
 cppblowfish::Buffer input {message.c_str(), message.size()};
 cppblowfish::Buffer cipher;
@@ -87,11 +89,11 @@ blowfish.encrypt(input, cipher);
 
 // Write cipher to file
 {
-    std::ofstream file {"cipher.txt", std::ios::binary};
-    if (!file.is_open()) { std::exit(1); }
+    std::ofstream stream {"cipher.txt", std::ios::binary};
+    if (!stream.is_open()) { std::exit(1); }
 
     // Write **all** the contents of the buffer into the file
-    cipher.write_whole_data(file);
+    cipher.write_whole_data(stream);
 
     // Or write to a buffer created by you
 #if 0
@@ -108,15 +110,15 @@ cppblowfish::Buffer cipher2;
 
 // Read cipher back from file
 {
-    std::ifstream file {"cipher.txt", std::ios::binary};
-    if (!file.is_open()) { std::exit(1); }
+    std::ifstream stream {"cipher.txt", std::ios::binary};
+    if (!stream.is_open()) { std::exit(1); }
 
-    file.seekg(0, file.end);
-    const auto length {file.tellg()};
-    file.seekg(0, file.beg);
+    stream.seekg(0, stream.end);
+    const auto length {stream.tellg()};
+    stream.seekg(0, stream.beg);
 
     char* raw_data {new char[length]};
-    file.read(raw_data, length);
+    stream.read(raw_data, length);
 
     // Create a new buffer from **all** the contents of a previous buffer
     cipher2 = cppblowfish::Buffer::read_whole_data(raw_data, length);
